@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="ostoslista.css">
+<script>
+/*
+items=Milk:Cheese:...;      (expires=...)
+amounts=1:250:...;
+units=l:g:...;
+type=dd...;    (Dairy=d, Meat=m, Greens=g,...)
+edit=Milk;
+ehistory=old/newEntry;
+*/
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0; i<ca.length; i++) {
+    var c = ca[i].trim();
+    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+  }
+  return "";
+}
+
+function setCookie(cname,cvalue,exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toGMTString();
+  document.cookie = cname+"="+cvalue+"; "+expires;
+}
+
+function getEntryText(amount,unit,item) {
+  var a = amount;
+  var u = unit;
+  var i = item;
+  var txt;
+  if (u == "-") {
+    if (a == 1) {
+      txt = i; // a=1 u=- => txt = item
+    } else {
+      txt = a + " " + i; // a!=1 u=- => txt= a item
+    }
+  } else {
+    txt = a + u + " " + item; // u!=- => txt = au item
+  }
+  return txt;
+}
+
+function getType(index) {
+  var n = type.charCodeAt(index);
+//  var d = "d".charCodeAt(0);
+//  var m = "m".charCodeAt(0);
+//  var g = "g".charCodeAt(0);
+  return n;
+}
+
+function loadList() {
+  var itemsRaw = getCookie(items);
+  if (itemsRaw != "") {
+    var items = itemsRaw.split(:);
+    var amountsRaw = getCookie(amounts);
+    var amounts = amountsRaw.split(:);
+    var unitsRaw = getCookie(units);
+    var units = unitsRaw.split(:);
+    var type = getCookie(type);
+    var x;
+    for (x in items) { // x is the index
+      var a = amounts[x];
+      var u = units[x];
+      var i = items[x];
+      document.getElementbyId(i).innerHTML = getEntryText(a,u,i);
+      switch (getType(x)) {
+        case "d".charCodeAt(0): //Dairy
+          document.getElementbyId(items[x]).background-color=blue;
+          break;
+        case "m".charCodeAt(0): //Meat
+          document.getElementbyId(items[x]).background-color=red;
+          break;
+        case "g".charCodeAt(0): //Greens
+          document.getElementbyId(items[x]).background-color=green;
+          break;
+      }
+    }
+  }
+}
+
+function editEntryDairy(e,activeColor) {
+  var bgc = e.style.background-color;
+  setCookie(edit,e.id,1);
+  if (bgc == activeColor) {
+    setCookie(ehistory,oldEntry,1);
+  } else {
+    setCookie(ehistory,newEntry,1);
+  }
+}
+
+function customEntry(e,activeColor) {
+
+}
+
+</script>
+</head>
+
+<body onload="loadList()">
+<div class="main">
+
+<h1>Dairy products</h1>
+<p id="Cheese" onclick="editEntry(this,blue)"><a href="addentry.html">Cheese</a></p>
+<p id="Milk" onclick="editEntry(this,blue)"><a href="addentry.html">Milk</a></p>
+<p id="Quark" onclick="editEntry(this,blue)"><a href="addentry.html">Quark</a></p>
+<!--p id="customDairy" onclick="customEntry(this,blue)"><a href="addentry.html">+</a></p-->
+
+<h1>Meat products</h1>
+<p id="Bacon" onclick="editEntry(this,red)"><a href="addentry.html">Bacon</a></p>
+<p id="Spam" onclick="editEntry(this,red)"><a href="addentry.html">Spam</a></p>
+
+</div>
+</body>
+

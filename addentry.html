@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="ostoslista.css">
+<script>
+/*
+items=Milk:Cheese:...;      (expires=...)
+amounts=1:250:...;
+units=l:g:...;
+type=dd...;    (Dairy=d, Meat=m, Greens=g,...)
+edit=Milk;
+prompt=old/newEntry;
+*/
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0; i<ca.length; i++) {
+    var c = ca[i].trim();
+    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+  }
+  return "";
+}
+
+function setCookie(cname,cvalue,exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toGMTString();
+  document.cookie = cname+"="+cvalue+"; "+expires;
+}
+
+function getEntryText(amount,unit,item) {
+  var a = amount;
+  var u = unit;
+  var i = item;
+  var txt;
+  if (u == "-") {
+    if (a == 1) {
+      txt = i; // a=1 u=- => txt = item
+    } else {
+      txt = a + " " + i; // a!=1 u=- => txt= a item
+    }
+  } else {
+    txt = a + u + " " + item; // u!=- => txt = au item
+  }
+  return txt;
+}
+
+function makePage() {
+  var ehistory = getCookie(ehistory);
+  var entry = getCookie(edit);
+  if (ehistory == oldEntry) {
+    var itemsRaw = getCookie(items);
+    var items = itemsRaw.split(:);
+    var amountsRaw = getCookie(amounts);
+    var amounts = amountsRaw.split(:);
+    var unitsRaw = getCookie(units);
+    var units = unitsRaw.split(:);
+    var index = items.indexOf(entry);
+    var a = amounts[index];
+    var u = units[index];
+    //Set heading
+    document.getElementById("addEntryTitle").innerHTML=getEntryText(a,u,entry);
+    //Show the buttons
+    showPrompt(true);
+    //Do not show the edit tools
+    showEdit(false);
+    //Prepare the edit view
+    document.getElementById("theItem").innerHTML=entry;
+    document.getElementById("amountI").value=a;
+    document.getElementById("unitI").value=u;
+  } else {
+    //Set heading
+    document.getElementById("addEntryTitle").innerHTML = "Add an Entry";
+    //Show the edit tools
+
+    //Do not show the prompt
+    document.getElementById("promptView").style.display="none";
+  }
+}
+
+function editEntryView() {
+  //Set heading
+  document.getElementById("addEntryTitle").innerHTML = "Add an Entry";
+  //Show the edit tools
+  showEdit(true);
+  //Do not show the prompt
+  showPrompot(false);
+}
+
+function showEdit(boolean) {
+  var show = boolean;
+  if (show == true) {
+    document.getElementById("theItem").style.display="inline";
+    document.getElementById("inputFields").style.display="inline";
+    document.getElementById("addEntryButtons").style.display="inline";
+    document.getElementById("cancel2").style.display="inline";
+  } else {
+    document.getElementById("theItem").style.display="none";
+    document.getElementById("inputFields").style.display="none";
+    document.getElementById("addEntryButtons").style.display="none";
+    document.getElementById("cancel2").style.display="none";
+  }
+}
+
+function showPrompt(boolean) {
+  var show = boolean;
+  if (show == true) {
+    document.getElementById("editEntry").style.display="inline";
+    document.getElementById("removeEntry").style.display="inline";
+    document.getElementById("cancel1").style.display="inline";
+  } else {
+    document.getElementById("editEntry").style.display="inline";
+    document.getElementById("removeEntry").style.display="inline";
+    document.getElementById("cancel1").style.display="inline";
+  }
+}
+
+</script>
+</head>
+<body onload="makePage()">
+<div class="main">
+<h2 id="addEntryTitle"></h2>
+
+<p id="editEntry" onclick="editEntryView()">Edit entry</p> <!-- center -->
+<p id="removeEntry" onclick="removeEntry()"><a href="editlist.html">Remove entry</a></p>
+<p id="cancel1"><a href="editlist.html">Cancel</a></p>
+
+
+<h3 id="theItem"></h3>
+<form id="inputFields">
+Amount: <input id="amountI" type="number" name="amountInput" placeholder=1 style="width:3em;">
+Unit: <input id="unitI" type="text" name="unitInput" placeholder="l, kg, ..." style="width:4em;">
+</form>
+
+<p id="addEntryButton" onclick="addEntry()"><a href="editlist.html">Add entry</a></p>
+<p id="cancel2"><a href="editlist.html">Cancel</a></p>
+
+
+</div>
+</body>
