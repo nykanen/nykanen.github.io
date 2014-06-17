@@ -102,11 +102,15 @@ function loadList() {
 }
 
 function editEntry(e) {
-  setCookie(edit,e.id,1);
+  var id = e.id;
+  var entryH;
+  setCookie(edit,id,1);
   if (items.indexOf(e.id) != -1) {
-    setCookie(ehistory,oldEntry,1);
+    entryH = "oldEntry";
+    setCookie(ehistory,entryH,1);
   } else {
-    setCookie(ehistory,newEntry,1);
+    entryH = "newEntry";
+    setCookie(ehistory,entryH,1);
   }
 }
 

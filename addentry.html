@@ -49,7 +49,7 @@ function getEntryText(amount,unit,item) {
 function makePage() {
   var ehistory = getCookie(ehistory);
   var entry = getCookie(edit);
-  if (ehistory == oldEntry) {
+  if (ehistory == "oldEntry") {
     var itemsRaw = getCookie(items);
     var items = itemsRaw.split(:);
     var amountsRaw = getCookie(amounts);
