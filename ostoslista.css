@@ -50,13 +50,23 @@ h3 {
   overflow: auto;
 }
 
-.main > p {
+.inactive {
   color: white;
   background-color: gray;
   padding: 2px;
   border: 0;
   margin: 1px;
   float: left;
+}
+
+.button {
+  color: white;
+  background-color: gray;
+  padding: 3px;
+  border: 1 solid white;
+  margin: 3px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .dairy, .meat {
