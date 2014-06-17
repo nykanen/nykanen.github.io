@@ -48,7 +48,9 @@ function getEntryText(amount,unit,item) {
 }
 
 function makePage() {
-  var ehistory = getCookie(ehistory);
+  var eh = "ehistory";
+  var edit = "edit";
+  var ehistory = getCookie(eh);
   var entry = getCookie(edit);
   if (ehistory == "oldEntry") {
     var itemsRaw = getCookie(items);
