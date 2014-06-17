@@ -19,7 +19,6 @@ h2 {
   font-size: 16px;
   font-weight: bold;
   color: white;
-  clear: both;
   margin-bottom: 1px;
   margin-top: 0px;
   background-color:black;
@@ -31,7 +30,6 @@ h3 {
   font-size: 14px;
   font-weight: bold;
   color: white;
-  clear: both;
   margin-bottom: 1px;
   margin-top: 0px;
   background-color:black;
@@ -59,14 +57,13 @@ h3 {
   float: left;
 }
 
-.button {
+p.button {
   color: white;
   background-color: gray;
-  padding: 3px;
-  border: 1 solid white;
-  margin: 3px;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 2px;
+  border: 1px solid white;
+  margin: 0.2em;
+  line-height:1.5em;
 }
 
 .dairy, .meat {
