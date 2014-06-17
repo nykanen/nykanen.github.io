@@ -50,6 +50,15 @@ h3 {
   overflow: auto;
 }
 
+.main > p {
+  color: white;
+  background-color: gray;
+  padding: 2px;
+  border: 0;
+  margin: 1px;
+  float: left;
+}
+
 .dairy, .meat {
   color: white;
   padding: 2px;
