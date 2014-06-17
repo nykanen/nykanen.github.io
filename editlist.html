@@ -71,11 +71,11 @@ var type;
 function loadList() {
   var itemsRaw = getCookie(items);
   if (itemsRaw != "") {
-    items = itemsRaw.split(:);
+    items = itemsRaw.split(":");
     var amountsRaw = getCookie(amounts);
-    var amounts = amountsRaw.split(:);
+    var amounts = amountsRaw.split(":");
     var unitsRaw = getCookie(units);
-    var units = unitsRaw.split(:);
+    var units = unitsRaw.split(":");
     type = getCookie(type);
     var x;
     for (x in items) { // x is the index
