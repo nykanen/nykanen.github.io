@@ -104,6 +104,8 @@ function loadList() {
 function editEntry(e) {
   var id = e.id;
   var entryH;
+  var edit = "edit";
+  var ehistory = "ehistory";
   setCookie(edit,id,1);
   if (items.indexOf(e.id) != -1) {
     entryH = "oldEntry";
