@@ -65,7 +65,7 @@ function getClass(n) {
       }  
 }
 
-var items = "";
+var items;
 var type;
 
 function loadList() {
