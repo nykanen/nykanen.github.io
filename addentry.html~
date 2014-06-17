@@ -26,7 +26,7 @@ function setCookie(cname,cvalue,exdays) {
   var d = new Date();
   d.setTime(d.getTime() + (exdays*24*60*60*1000));
   var expires = "expires=" + d.toGMTString();
-  var domain = '"nykanen.github.io"';
+  var domain = "nykanen.github.io";
   document.cookie = cname+"="+cvalue+"; "+expires+"; domain="+domain+"; path=/";
 }
 
@@ -75,6 +75,7 @@ function makePage() {
   } else {
     //Set heading
     document.getElementById("addEntryTitle").innerHTML = "Add an Entry";
+    document.getElementById("theItem").innerHTML = entry ;
     //Show the edit tools
     showEdit(true);
     //Do not show the prompt
@@ -119,15 +120,17 @@ function showPrompt(boolean) {
   document.getElementById("cancel1").style.display=show;
 }
 
+
+
 </script>
 </head>
 <body onload="makePage()">
 <div class="main">
 <h2 id="addEntryTitle"></h2>
 
-<p id="editEntry" onclick="editEntryView()">Edit entry</p> <!-- center -->
-<p id="removeEntry" onclick="removeEntry()"><a href="editlist.html">Remove entry</a></p>
-<p id="cancel1"><a href="editlist.html">Cancel</a></p>
+<p id="editEntry" class="button" onclick="editEntryView()">Edit entry</p> <!-- center -->
+<p id="removeEntry" class="button" onclick="removeEntry()"><a href="editlist.html">Remove entry</a></p>
+<p id="cancel1" class="button"><a href="editlist.html">Cancel</a></p>
 
 
 <h3 id="theItem"></h3>
@@ -135,9 +138,8 @@ function showPrompt(boolean) {
 Amount: <input id="amountI" type="number" name="amountInput" placeholder=1 style="width:3em;"><br>
 Unit: <input id="unitI" type="text" name="unitInput" placeholder="l, kg, ..." style="width:4em;">
 </form>
-
-<p id="addEntryButton" onclick="addEntry()"><a href="editlist.html">Add entry</a></p>
-<p id="cancel2"><a href="editlist.html">Cancel</a></p>
+<p id="addEntryButton" class="button" onclick="addEntry()"><a href="editlist.html">Add entry</a></p>
+<p id="cancel2" class="button"><a href="editlist.html">Cancel</a></p>
 
 
 </div>
