@@ -76,9 +76,9 @@ function makePage() {
     //Set heading
     document.getElementById("addEntryTitle").innerHTML = "Add an Entry";
     //Show the edit tools
-
+    showEdit(true);
     //Do not show the prompt
-    document.getElementById("promptView").style.display="none";
+    showPrompt(false);
   }
 }
 
@@ -92,31 +92,28 @@ function editEntryView() {
 }
 
 function showEdit(boolean) {
-  var show = boolean;
-  if (show == true) {
-    document.getElementById("theItem").style.display="inline";
-    document.getElementById("inputFields").style.display="inline";
-    document.getElementById("addEntryButtons").style.display="inline";
-    document.getElementById("cancel2").style.display="inline";
+  var show;
+  if (boolean == true) {
+    show = "inline";
   } else {
-    document.getElementById("theItem").style.display="none";
-    document.getElementById("inputFields").style.display="none";
-    document.getElementById("addEntryButtons").style.display="none";
-    document.getElementById("cancel2").style.display="none";
+    show = "none";
   }
+  document.getElementById("theItem").style.display=show;
+  document.getElementById("inputFields").style.display=show;
+  document.getElementById("addEntryButtons").style.display=show;
+  document.getElementById("cancel2").style.display=show;
 }
 
 function showPrompt(boolean) {
-  var show = boolean;
-  if (show == true) {
-    document.getElementById("editEntry").style.display="inline";
-    document.getElementById("removeEntry").style.display="inline";
-    document.getElementById("cancel1").style.display="inline";
+  var show;
+  if (boolean == true) {
+    show = "inline";
   } else {
-    document.getElementById("editEntry").style.display="none";
-    document.getElementById("removeEntry").style.display="none";
-    document.getElementById("cancel1").style.display="none";
+    show = "none";
   }
+  document.getElementById("editEntry").style.display=show;
+  document.getElementById("removeEntry").style.display=show;
+  document.getElementById("cancel1").style.display=show;
 }
 
 </script>
