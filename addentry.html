@@ -52,11 +52,11 @@ function makePage() {
   var entry = getCookie(edit);
   if (ehistory == "oldEntry") {
     var itemsRaw = getCookie(items);
-    var items = itemsRaw.split(:);
+    var items = itemsRaw.split(":");
     var amountsRaw = getCookie(amounts);
-    var amounts = amountsRaw.split(:);
+    var amounts = amountsRaw.split(":");
     var unitsRaw = getCookie(units);
-    var units = unitsRaw.split(:);
+    var units = unitsRaw.split(":");
     var index = items.indexOf(entry);
     var a = amounts[index];
     var u = units[index];
