@@ -85,7 +85,7 @@ function editEntryView() {
   //Show the edit tools
   showEdit(true);
   //Do not show the prompt
-  showPrompot(false);
+  showPrompt(false);
 }
 
 function showEdit(boolean) {
