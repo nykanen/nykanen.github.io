@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="ostoslista.css">
+<script>
+
+function getCookie(cname) {
+  var name = cname + "=";
+  var ca = document.cookie.split(';');
+  for(var i=0; i<ca.length; i++) {
+    var c = ca[i].trim();
+    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+  }
+  return "";
+}
+
+function setCookie(cname,cvalue,exdays) {
+  var d = new Date();
+  d.setTime(d.getTime() + (exdays*24*60*60*1000));
+  var expires = "expires=" + d.toGMTString();
+  document.cookie = cname+"="+cvalue+"; "+expires+"; domain=nykanen.github.io; path=/";
+}
+
+function getType(index) {
+  var n = type.charCodeAt(index);
+  return n;
+}
+
+function convertType(t) {
+  var typelist = [bakery:"b", dairy:"d", dry:"D", drinks:"r", fish:"f", greens:"g", hyg:"h", meat:"m"];
+  return typelist[t];
+}
+
+function getClass(n) {
+  switch (n) {
+    case "b".charCodeAt(0): //Bakery
+      return "bakery";
+      break;
+    case "d".charCodeAt(0): //Dairy
+      return "dairy";
+      break;
+    case "D".charCodeAt(0): //Dry
+      return "dry";
+      break;
+    case "r".charCodeAt(0): //Drinks
+      return "drinks";
+      break;
+    case "f".charCodeAt(0): //Fish
+      return "fish";
+      break;
+    case "g".charCodeAt(0): //Greens
+      return "greens";
+      break;
+    case "h".charCodeAt(0): //Hygiene
+      return "hyg";
+      break;
+    case "m".charCodeAt(0): //Meat
+      return "meat";
+      break;
+  }  
+}
+
+var entries;
+
+//Default entries
+entries = [
+{item:'Milk',type:'dairy',unit:'l',amount:1,active:false},
+{item:'Cheese',type:'dairy',unit:'pkg',amount:1,active:false},
+{item:'Bread',type:'bakery',unit:'pkg',amount:1,active:false},
+{item:'Toast',type:'bakery',unit:'pkg',amount:1,active:false},
+{item:'Minced meat',type:'meat',unit:'g',amount:500,active:false},
+{item:'Cream',type:'dairy',unit:'dl',amount:2,active:false},
+{item:'Fresh cheese',type:'dairy',unit:'pkg',amount:1,active:false},
+{item:'Cola',type:'drinks',unit:'l',amount:1.5,active:false},
+{item:'Orange juice',type:'drinks',unit:'l',amount:1,active:false},
+{item:'Apple juice',type:'drinks',unit:'l',amount:1,active:false},
+{item:'Sparkling water',type:'drinks',unit:'l',amount:1,active:false},
+{item:'Still water',type:'drinks',unit:'l',amount:1,active:false},
+{item:'Beer',type:'drinks',unit:'l',amount:0.5,active:false},
+{item:'Sausage',type:'meat',unit:'-',amount:1,active:false},
+{item:'Chicken filet',type:'meat',unit:'g',amount:500,active:false},
+{item:'Pork chops',type:'meat',unit:'g',amount:500,active:false},
+{item:'Salmon',type:'fish',unit:'kg',amount:1,active:false},
+{item:'Shrimps',type:'fish',unit:'g',amount:250,active:false},
+{item:'Trout',type:'fish',unit:'kg',amount:1,active:false},
+{item:'Herring',type:'fish',unit:'g',amount:500,active:false},
+{item:'Tuna',type:'fish',unit:'g',amount:500,active:false},
+{item:'Sushi',type:'fish',unit:'-',amount:1,active:false},
+{item:'Potatoes',type:'greens',unit:'kg',amount:1,active:false},
+{item:'Apples',type:'greens',unit:'kg',amount:0.5,active:false},
+{item:'Cucumber',type:'greens',unit:'kg',amount:0.5,active:false},
+{item:'Tomatoes',type:'greens',unit:'kg',amount:0.5,active:false},
+{item:'Oranges',type:'greens',unit:'kg',amount:0.5,active:false},
+{item:'Spam',type:'meat',unit:'g',amount:500,active:false},
+{item:'Toothpaste',type:'hyg',unit:'pkg',amount:1,active:false},
+{item:'Soap',type:'hyg',unit:'-',amount:1,active:false},
+{item:'Shampoo',type:'hyg',unit:'-',amount:1,active:false},
+{item:'Shower gel',type:'hyg',unit:'-',amount:1,active:false},
+{item:'Toilet paper',type:'hyg',unit:'-',amount:1,active:false},
+{item:'Toothbrush',type:'hyg',unit:'-',amount:1,active:false},
+{item:'Penne',type:'dry',unit:'g',amount:500,active:false},
+{item:'Rice',type:'dry',unit:'kg',amount:1,active:false},
+{item:'Wheat flour',type:'dry',unit:'kg',amount:1,active:false}
+]
+
+function entriesIndex(item) {
+  for (i = 0; i < entries.length; i++) {
+    if (entries[i].item == item) {
+      return i;
+      break;
+    }
+  }
+  return -1;
+}
+
+//Sorting function for object array
+// http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
+function compare(a,b) {
+  if (a.item < b.item)
+     return -1;
+  if (a.item > b.item)
+    return 1;
+  return 0;
+}
+
+var type;
+var items = "";
+
+function loadList() {
+  var itemsRaw = getCookie(items);
+  if (itemsRaw != "") {
+    items = itemsRaw.split(":");
+    var amountsRaw = getCookie(amounts);
+    var amounts = amountsRaw.split(":");
+    var unitsRaw = getCookie(units);
+    var units = unitsRaw.split(":");
+    type = getCookie(type);
+    var x;
+    for (x in items) { // x is the index
+      var a = amounts[x];
+      var u = units[x];
+      var i = items[x];
+      var y = entriesIndex(i);
+      if (y != -1) {
+        entries[y].amount = a;
+        entries[y].unit = u;
+        entries[y].active = true;
+      } else {
+        var entry = {};
+        var t = getType(x);
+        var c = getClass(t);
+        entry.item = i;
+        entry.type = c;
+        entry.unit = u;
+        entry.amount = a;
+        entry.active = true;
+        entries.push(entry);
+      }
+    }
+  }
+  entries.sort(compare);
+}
+
+function getEntryText(amount,unit,item) {
+  var a = amount;
+  var u = unit;
+  var i = item;
+  var txt;
+  if (u == "-") {
+    if (a == 1) {
+      txt = i; // a=1 u=- => txt = item
+    } else {
+      txt = a + " " + i; // a!=1 u=- => txt= a item
+    }
+  } else {
+    txt = a + u + " " + item; // u!=- => txt = au item
+  }
+  return txt;
+}
+
+function check(e,t) {
+  var cn = e.className;
+  if (cn != "checked") {
+    e.className = "checked";
+  } else {
+    e.className = t;
+  }
+}
+
+var state = "view";
+
+function itemClick(e,a,u,i,t) {
+  if (state=="view") {
+    check(e,t);
+  } else {
+    showPrompt(e,a,u,i,t);
+  }
+}
+
+function showMain(b) {
+  var main = "none";
+  var side = "block";
+  if (b) {
+    main = "block";
+    side = "none";
+  }
+  document.getElementsByClassName("main")[0].style.display=main;
+  document.getElementsByClassName("side")[0].style.display=side;
+}
+
+function showForm(b) {
+  var show = "none";
+  if (b) {
+    show = "inline";
+  }
+  document.getElementById("theForm").style.display=show;
+}
+
+function showPrompt(e,a,u,i,t) {
+  showMain(false);
+  showForm(false);
+  var div = document.getElementsByClassName("side")[0];
+  var h = document.createElement("h1");
+  h.className = "menu";
+  h.innerHTML = e.innerHTML;
+  div.appendChild(h);
+  var p1 = document.createElement("p");
+  p1.className = "prompt";
+  p1.innerHTML = "Edit entry";
+  p1.addEventListener("click",editEntry(e,a,u,i,t),false);
+  div.appendChild(p1);
+  var p2 = document.createElement("p");
+  p2.className = "prompt";
+  p2.innerHTML = "Remove entry";
+  p2.addEventListener("click",removeEntry(e),false); //TODO
+  div.appendChild(p2);
+  var p3 = document.createElement("p");
+  p3.className = "prompt";
+  p3.innerHTML = "Cancel";
+  p3.addEventListener("click",editView,false);
+  div.appendChild(p3);
+}
+
+function editView() {
+  showMain(true);
+  document.getElementById("notification").style.display = "none";
+  var elements = document.getElementsByClassName("edit");
+  for (i=0; i<elements.length; i++) {
+    elements[i].style.display = "block";
+  }
+  document.getElementById("title").innerHTML="Edit List";
+  document.getElementById("navi").innerHTML="Home";
+  state = "edit";
+}
+
+function editEntry(e,a,u,i,t) {//TODO
+  showMain(false);
+  showForm(true);
+  var div = document.getElementsByClassName("side")[0];
+  var h = document.createElement("h1");
+  h.className = "menu";
+  h.innerHTML = "Edit Entry";
+  div.appendChild(h);
+  var itemInput = document.getElementById("itemInput");
+  itemInput.setAttribute("defaultValue",i);
+  var itemInput = document.getElementById("amountInput");
+  itemInput.setAttribute("defaultValue",a);
+  var itemInput = document.getElementById("unitInput");
+  if (u != "-") {
+    itemInput.setAttribute("defaultValue",u);
+  } else {
+    itemInput.setAttribute("placeholder","l, kg, ...");
+  }
+  var buttons = document.getElementById("buttons");
+  var p1 = document.createElement("p");
+  var newItem = itemInput.value;
+  var newAmount = amountInput.value;
+  var newUnit = unitInput.value;
+  p1.className = "button";
+  p1.innerHTML = "Add entry";
+  p1.addEventListener("click",addEntry(newItem,newAmount,newUnit,t),false);//TODO
+  buttons.appendChild(p1);
+  var p2 = document.createElement("p");
+  p2.className = "button";
+  p2.innerHTML = "Cancel";
+  p1.addEventListener("click",editView,false);
+  buttons.appendChild(p2);
+}
+
+function addEntry(i,a,u,t) {
+//edit entries (edit or add entry)
+  var typeCode = convertType(t);
+  lookup: {
+    for (x in entries) {
+      if (entries[x].item == i) {
+        entries[x].amount = a;
+        entries[x].unit = u;
+        entries[x].active = true;
+        break lookup;
+      }
+    }
+    var customEntry = {};
+    customEntry.item = i;
+    customEntry.amount = a;
+    customEntry.unit = u;
+    customEntry.type = t;
+    customEntry.active = true;
+    entries.push(customEntry);
+  }
+//write cookie
+  
+//makePage()
+//showEdit()
+}
+
+function makeEntry(entry) {
+  var i = entry.item;
+  var t = entry.type;
+  var p = document.createElement("p");
+  if (entry.active) {
+    p.className = t; //Set the class of the entry (affects visibility)
+    var headID = t.concat("Head");
+    document.getElementById(headID).className = t; //Set the class of the head
+    var a = entry.amount;
+    var u = entry.unit;
+    var txt = getEntryText(a,u,i);
+    p.innerHTML = txt;
+    p.addEventListener("click",itemClick(this,a,u,i,t),false);
+    var div = document.getElementById(t);
+    div.appendChild(p);
+  } else {
+    p.className = "edit";
+    p.innerHTML = i;
+    p.addEventListener("click",editEntry(this,1,"-",i,t),false);
+    var div = document.getElementById(t);
+    div.appendChild(p);
+  }
+}
+
+function showNotification() {
+  var p = document.getElementById("notification");
+  p.innerHTML = "You have no shopping list. Create a new list!";
+  p.addEventListener("click",editView,false);
+  p.style.color = "white";
+}
+
+function makePage() {
+  showMain(true);
+  loadList();
+  state = "view";
+  for (i in entries) {
+    makeEntry(entries[i]);
+  }
+  var elements = document.getElementsByClassName("edit");
+  for (i=0; i<elements.length; i++) {
+    elements[i].style.display = "none";
+  }
+  if (items == "") {  
+    showNotification();
+  }
+}
+
+function switchView() {
+  if (state=="view") {
+    editView()
+  } else {
+    var elements = document.getElementsByClassName("edit");
+    for (i=0; i<elements.length; i++) {
+      elements[i].style.display = "none";
+    }
+    document.getElementById("title").innerHTML="The Shopping List";
+    document.getElementById("navi").innerHTML="Edit";
+    state = "view";
+  }
+}
+
+//TODO
+//menu: Clear
+//prompt: Remove entry
+//addCustomEntry()
+//addEntry()
+
+</script>
+</head>
+<body onload="makePage()">
+
+<div class="main">
+<h1 class="menu" id="title">The Shopping List</h1>
+<p class="menu"><span id="navi" onclick="switchView()">Edit</span><span>Clear</span><br></p>
+
+<p id="notification"></p>
+
+<h1 class="edit" id="bakeryHead">Bakery products</h1>
+<div id="bakery"></div>
+
+<h1 class="edit" id="dairyHead">Dairy products</h1>
+<div id="dairy"></div>
+
+<h1 class="edit" id="drinksHead">Drinks</h1>
+<div id="drinks"></div>
+
+<h1 class="edit" id="dryHead">Dry goods</h1>
+<div id="dry"></div>
+
+<h1 class="edit" id="fishHead">Fish</h1>
+<div id="fish"></div>
+
+<h1 class="edit" id="greensHead">Fruits and vegetables</h1>
+<div id="greens"></div>
+
+<h1 class="edit" id="hygHead">Hygiene products</h1>
+<div id="hyg"></div>
+
+<h1 class="edit" id="meatHead">Meat products</h1>
+<div id="meat"></div>
+
+</div>
+<div class="side">
+<form id="theForm">
+Item: <input id="inputItem">
+Amount: <input id="inputAmount">
+Unit: <input id="inputUnit">
+</form>
+<div id="buttons">
+</div>
+</div>
+</body>
+

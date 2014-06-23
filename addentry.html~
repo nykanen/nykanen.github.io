@@ -141,7 +141,7 @@ Amount: <input id="amountI" type="number" name="amountInput" placeholder=1 style
 Unit: <input id="unitI" type="text" name="unitInput" placeholder="l, kg, ..." style="width:4em;">
 </form>
 <br>
-<p id="addEntryButton" class="button" onclick="addEntry()"><a href="editlist.html">Add entry</a></p>
+<p id="addEntryButton" class="button" onclick="addEntry()"><a href="editlist.html">Add entry</a></p><br>
 <p id="cancel2" class="button"><a href="editlist.html">Cancel</a></p>
 </div>
 </body>
