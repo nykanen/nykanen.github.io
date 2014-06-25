@@ -593,9 +593,9 @@ function printEntries() {
 <p id="cancel"></p>
 </div>
 </div>
-<div id="log">
+<!--div id="log">
 <p onclick="printEntries()">Print Entries</p>
 <div id ="out"></div>
-</div>
+</div-->
 </body>
 
