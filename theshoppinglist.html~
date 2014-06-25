@@ -305,7 +305,6 @@ function removeEntry() { //TODO: check if the div has children after the removal
 
 function editView() {
   showMain(true);
-  showPrompt(false);
   document.getElementById("notification").style.display = "none";
   var elements = document.getElementsByClassName("edit");
   for (i=0; i<elements.length; i++) {
@@ -318,6 +317,7 @@ function editView() {
 function editEntry() {//TODO
   showMain(false);
   showForm(true);
+  showPrompt(false);
   var item = editItem;
   var index = getIndex(item);
   var a = entries[index].amount;
