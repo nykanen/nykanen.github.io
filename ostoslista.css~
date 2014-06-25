@@ -4,7 +4,7 @@ body {
   font-size: 1em;
 }
 
-h1 {
+h1, .view {
   font-size: 0.8em;
   font-weight: bold;
   color: white;
@@ -60,17 +60,17 @@ h3 {
   float: left;
 }
 
-p.button {
+/*p.button {
   color: white;
   background-color: gray;
   padding: 0.1em;
   border: 1px solid white;
   margin: 0.2em;
   line-height:2em;
-}
+}*/
 
 /*.dairy, .meat {*/
-p.main {
+p {
   color: white;
   padding: 0.1em;
   border: 0;
@@ -78,7 +78,7 @@ p.main {
   float: left;
 }
 
-p.edit {
+p.edit, .checked {
   color: white;
   padding: 0.1em;
   border: 0;
@@ -147,7 +147,7 @@ h1.menu {
   font-weight: bold;
   clear: both;
   margin-left:0.3em;
-  margin-bottom: 0em;
+  margin-bottom: 0.1em;
   margin-top: 0px;
   padding-top: 0em;
   padding-bottom: 0em;
@@ -179,9 +179,10 @@ p.menu > span {
 }
 
 .prompt {
-  border: 1px solid gray;
+  border: 0.1em solid gray;
   background-color: black;
-  margin-top:5em;
+  margin-top:4em;
+  margin-left:0.5em;
   display: block;
   width: 60%;
   padding-left:1em;
@@ -189,8 +190,39 @@ p.menu > span {
   padding-top: 0.2em;
   padding-bottom: 0;
   text-align: center;
-  font-size: 1em;
+  font-size: 0.8em;
   font-weight: bold;
   text-transform: uppercase;
+  color: gray;
+}
+
+.button {
+  border: 1px solid gray;
+  background-color: black;
+  margin-top:0.2em;
+  margin-left:0.2em;
+  display: block;
+  width: 60%;
+  padding-top: 0.2em;
+  padding-bottom: 0;
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  float: left;
+  clear: both;
+  color: gray;
+}
+
+.input {
+  width: 4em;
+}
+
+label {
+  display: block;
+  width: 4.5em;
+  float: left;
+  margin: 0.1em;
+  text-align: right;
 }
 

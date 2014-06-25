@@ -27,7 +27,7 @@ function getType(index) {
 }
 
 function convertType(t) {
-  var typelist = [bakery:"b", dairy:"d", dry:"D", drinks:"r", fish:"f", greens:"g", hyg:"h", meat:"m"];
+  var typelist = {bakery:"b",dairy:"d",dry:"D",drinks:"r",fish:"f",greens:"g",hyg:"h",meat:"m"};
   return typelist[t];
 }
 
@@ -103,6 +103,7 @@ entries = [
 {item:'Wheat flour',type:'dry',unit:'kg',amount:1,active:false}
 ]
 
+//Required for loading a saved shopping list
 function entriesIndex(item) {
   for (i = 0; i < entries.length; i++) {
     if (entries[i].item == item) {
@@ -124,17 +125,22 @@ function compare(a,b) {
 }
 
 var type;
-var items = "";
+var items = [];
+
+function getIndex(item) {
+  var index = items.indexOf(item);
+  return index;
+}
 
 function loadList() {
-  var itemsRaw = getCookie(items);
+  var itemsRaw = getCookie("items");
   if (itemsRaw != "") {
     items = itemsRaw.split(":");
-    var amountsRaw = getCookie(amounts);
+    var amountsRaw = getCookie("amounts");
     var amounts = amountsRaw.split(":");
-    var unitsRaw = getCookie(units);
+    var unitsRaw = getCookie("units");
     var units = unitsRaw.split(":");
-    type = getCookie(type);
+    type = getCookie("type");
     var x;
     for (x in items) { // x is the index
       var a = amounts[x];
@@ -159,11 +165,16 @@ function loadList() {
     }
   }
   entries.sort(compare);
+  items = [];
+  for (x in entries) {
+    items[x] = entries[x].item;
+  }
 }
 
-function getEntryText(amount,unit,item) {
-  var a = amount;
-  var u = unit;
+function getEntryText(item) {
+  var index = getIndex(item);
+  var a = entries[index].amount;
+  var u = entries[index].unit;
   var i = item;
   var txt;
   if (u == "-") {
@@ -178,71 +189,123 @@ function getEntryText(amount,unit,item) {
   return txt;
 }
 
-function check(e,t) {
+var checkList = [];
+
+function check(e,item) {
+//  var entryId = item + "ID";
+  var index = getIndex(item);
+//  var e = document.getElementById(entryId);
   var cn = e.className;
   if (cn != "checked") {
     e.className = "checked";
   } else {
-    e.className = t;
+    e.className = entries[index].type;
   }
+/*  var checkIndex = checkList.indexOf(item);
+  if (checkIndex == -1) {
+    checkList.push(item);
+  } else {
+    checkList.splice(checkIndex,1);
+  }*/
 }
 
 var state = "view";
 
-function itemClick(e,a,u,i,t) {
-  if (state=="view") {
-    check(e,t);
+var editItem = "";
+var editType= "";
+
+function itemClick() {
+  var itemId = this.id;
+  var item = itemId.slice(0,-2);
+  editItem = item;
+  var index = getIndex(item);
+  editType = entries[index].type;
+  if (entries[index].active) {
+    if (state=="view") {
+      check(this,item);
+    } else {
+      promptView(item);
+    }
   } else {
-    showPrompt(e,a,u,i,t);
+    editEntry();
   }
 }
 
 function showMain(b) {
-  var main = "none";
-  var side = "block";
+  var main;
+  var side;
   if (b) {
     main = "block";
     side = "none";
+  } else {
+    main = "none";
+    side = "block";
   }
-  document.getElementsByClassName("main")[0].style.display=main;
-  document.getElementsByClassName("side")[0].style.display=side;
+  document.getElementById("mainView").style.display=main;
+  document.getElementById("sideView").style.display=side;
 }
 
 function showForm(b) {
-  var show = "none";
+  var show;
   if (b) {
     show = "inline";
+  } else {
+    show = "none";
   }
   document.getElementById("theForm").style.display=show;
+  document.getElementById("addentry").style.display=show;
 }
 
-function showPrompt(e,a,u,i,t) {
+function showPrompt(b) {
+  var show;
+  if (b) {
+    show = "block";
+  } else {
+    show = "none";
+  }
+  document.getElementById("editentry").style.display=show;
+  document.getElementById("removeentry").style.display=show;
+}
+
+function promptView(item) {
   showMain(false);
   showForm(false);
-  var div = document.getElementsByClassName("side")[0];
-  var h = document.createElement("h1");
+  showPrompt(true);
+  var div = document.getElementById("sideView");
+  var h = document.getElementById("sidehead");
   h.className = "menu";
-  h.innerHTML = e.innerHTML;
-  div.appendChild(h);
-  var p1 = document.createElement("p");
+  h.innerHTML = getEntryText(item);
+  var p1 = document.getElementById("editentry");
   p1.className = "prompt";
   p1.innerHTML = "Edit entry";
-  p1.addEventListener("click",editEntry(e,a,u,i,t),false);
-  div.appendChild(p1);
-  var p2 = document.createElement("p");
+  p1.addEventListener("click",editEntry,false);
+  var p2 = document.getElementById("removeentry");
   p2.className = "prompt";
   p2.innerHTML = "Remove entry";
-  p2.addEventListener("click",removeEntry(e),false); //TODO
-  div.appendChild(p2);
-  var p3 = document.createElement("p");
+  p2.addEventListener("click",removeEntry,false);
+  var p3 = document.getElementById("cancel");
   p3.className = "prompt";
   p3.innerHTML = "Cancel";
   p3.addEventListener("click",editView,false);
-  div.appendChild(p3);
+}
+
+function removeEntry() { //TODO: check if the div has children after the removal
+  var item = editItem;
+  var index = getIndex(item);
+  entries[index].amount = 1;
+  entries[index].unit = "-";
+  entries[index].active = false;
+  var entryID = item + "ID";
+  var e = document.getElementById(entryID);
+  e.innerHTML = item;
+  e.className = "edit";
+  writeCookie();
+  editView();
 }
 
 function editView() {
   showMain(true);
+  showPrompt(false);
   document.getElementById("notification").style.display = "none";
   var elements = document.getElementsByClassName("edit");
   for (i=0; i<elements.length; i++) {
@@ -250,92 +313,181 @@ function editView() {
   }
   document.getElementById("title").innerHTML="Edit List";
   document.getElementById("navi").innerHTML="Home";
-  state = "edit";
 }
 
-function editEntry(e,a,u,i,t) {//TODO
+function editEntry() {//TODO
   showMain(false);
   showForm(true);
-  var div = document.getElementsByClassName("side")[0];
-  var h = document.createElement("h1");
-  h.className = "menu";
+  var item = editItem;
+  var index = getIndex(item);
+  var a = entries[index].amount;
+  var u = entries[index].unit;
+  var t = entries[index].type;
+  var h = document.getElementById("sidehead");
   h.innerHTML = "Edit Entry";
-  div.appendChild(h);
-  var itemInput = document.getElementById("itemInput");
-  itemInput.setAttribute("defaultValue",i);
-  var itemInput = document.getElementById("amountInput");
-  itemInput.setAttribute("defaultValue",a);
-  var itemInput = document.getElementById("unitInput");
+  var itemInput = document.getElementById("inputItem");
+  itemInput.setAttribute("value",item);
+  var amountInput = document.getElementById("inputAmount");
+  amountInput.setAttribute("value",a);
+  var unitInput = document.getElementById("inputUnit");
   if (u != "-") {
-    itemInput.setAttribute("defaultValue",u);
+    unitInput.setAttribute("value",u);
   } else {
-    itemInput.setAttribute("placeholder","l, kg, ...");
+    unitInput.setAttribute("placeholder","l, kg, ...");
   }
-  var buttons = document.getElementById("buttons");
-  var p1 = document.createElement("p");
-  var newItem = itemInput.value;
-  var newAmount = amountInput.value;
-  var newUnit = unitInput.value;
+  var p1 = document.getElementById("addentry");
   p1.className = "button";
   p1.innerHTML = "Add entry";
-  p1.addEventListener("click",addEntry(newItem,newAmount,newUnit,t),false);//TODO
-  buttons.appendChild(p1);
-  var p2 = document.createElement("p");
+  p1.addEventListener("click",addEntry,false);
+  var p2 = document.getElementById("cancel");
   p2.className = "button";
   p2.innerHTML = "Cancel";
-  p1.addEventListener("click",editView,false);
-  buttons.appendChild(p2);
+  p2.addEventListener("click",editView,false);
 }
 
-function addEntry(i,a,u,t) {
-//edit entries (edit or add entry)
-  var typeCode = convertType(t);
-  lookup: {
+function addEntry() {
+  //Read input fields
+  var item = document.getElementById("inputItem").value;
+  var amount = document.getElementById("inputAmount").value;
+  var unit = document.getElementById("inputUnit").value;
+  if (unit == "") {
+    unit = "-";
+  }
+  var type = editType;
+  //Make the heading visible
+  document.getElementById(type+"Head").className="view";
+  var index = getIndex(item);
+  if (index == -1) { //add a new item
+    var entry = {};
+    entry.item = item;
+    entry.amount = amount;
+    entry.unit = unit;
+    entry.type = type;
+    entry.active = true;
+    entries.push(entry);
+    entries.sort(compare);
+    items = [];
     for (x in entries) {
-      if (entries[x].item == i) {
-        entries[x].amount = a;
-        entries[x].unit = u;
-        entries[x].active = true;
-        break lookup;
+      items[x] = entries[x].item;
+    }
+    addNewItem(item);
+  } else { //edit an old item
+    entries[index].amount = amount;
+    entries[index].unit = unit;
+    entries[index].active = true;
+    itemId = item + "ID";
+    var e = document.getElementById(itemId);
+    e.innerHTML = getEntryText(item);
+    e.className = entries[index].type;
+  }
+  writeCookie();  
+  editView();
+}
+
+function addNewItem(item) {
+  var index = getIndex(item);
+  var type = entries[index].type;
+  var entriesOfAType = []; //indices of items of a type type
+  var itemsOfAType = []; //list_of_items of a type type
+  for (x in entries) {
+    if (entries[x].type == type) {
+      entriesOfAType.push(x);
+      itemsOfAType.push(entries[x].item);
+    }
+  }
+  var typeIndex = itemsOfAType.indexOf(item); //index of the item in the list_of_items
+  var div = document.getElementById(type);
+  var p = document.createElement("p");
+  p.innerHTML = getEntryText(item);
+  p.className = type;
+  p.id = item + "ID";
+  p.addEventListener("click",itemClick,false);
+  var lastIndex = itemsOfAType.length - 1;
+  if (itemsOfAType.length == 1 || typeIndex == lastIndex) {
+    div.appendChild(p);
+  } else {
+    var next = itemsOfAType[typeIndex + 1];
+    var nextId = next + "ID";
+    var pn = document.getElementById(nextId);
+    div.insertBefore(p,pn);
+  }
+}
+
+function writeCookie() {
+  var itemsEntry = "";
+  var amountsEntry = "";
+  var unitsEntry = "";
+  var typesEntry = "";
+  var first = true;
+  for (x in entries) {
+    if (entries[x].active == true) {
+      var typeCode = convertType(entries[x].type);
+      typesEntry = typesEntry + typeCode;
+      if (first) {
+        itemsEntry = entries[x].item;
+        amountsEntry = entries[x].amount;
+        unitsEntry = entries[x].unit;
+        first = false;
+      } else {
+        itemsEntry = itemsEntry + ":" + entries[x].item;
+        amountsEntry = amountsEntry + ":" + entries[x].amount;
+        unitsEntry = unitsEntry + ":" + entries[x].unit;
       }
     }
-    var customEntry = {};
-    customEntry.item = i;
-    customEntry.amount = a;
-    customEntry.unit = u;
-    customEntry.type = t;
-    customEntry.active = true;
-    entries.push(customEntry);
   }
-//write cookie
-  
-//makePage()
-//showEdit()
+  setCookie("items",itemsEntry,100);
+  setCookie("amounts",amountsEntry,100);
+  setCookie("units",unitsEntry,100);
+  setCookie("type",typesEntry,100);
 }
 
 function makeEntry(entry) {
   var i = entry.item;
   var t = entry.type;
   var p = document.createElement("p");
+  var entryId = i + "ID";
   if (entry.active) {
     p.className = t; //Set the class of the entry (affects visibility)
     var headID = t.concat("Head");
-    document.getElementById(headID).className = t; //Set the class of the head
-    var a = entry.amount;
-    var u = entry.unit;
-    var txt = getEntryText(a,u,i);
+    document.getElementById(headID).className = "view"; //Set the class of the head
+    var txt = getEntryText(i);
     p.innerHTML = txt;
-    p.addEventListener("click",itemClick(this,a,u,i,t),false);
+    p.id = entryId;
+    p.addEventListener("click",itemClick,false);
     var div = document.getElementById(t);
     div.appendChild(p);
   } else {
     p.className = "edit";
     p.innerHTML = i;
-    p.addEventListener("click",editEntry(this,1,"-",i,t),false);
+    p.id = entryId;
+    p.addEventListener("click",itemClick,false);
     var div = document.getElementById(t);
     div.appendChild(p);
   }
 }
+
+/*function addAction() {
+  for (x in items) {
+//    var entryId = items[x] + "ID";
+//    var p = document.getElementById(entryId);
+//    p.addEventListener("click",itemClick(items[x]),false);
+    addItemAction(items[x]);
+  }
+}
+
+function addItemAction(item) {
+  var entryId = item + "ID";
+  var oldP = document.getElementById(entryId);
+  var newP = document.createElement("p");
+  var index = getIndex(item);
+  var type = entries[index].type;
+  var div = document.getElementById(type + "Head");
+  newP.className = type;
+  newP.innerHTML = getEntryText(item);
+  newP.id = entryId;
+  newP.addEventListener("click",itemClick(item),false);
+  div.replaceChild(newP,oldP);
+}*/
 
 function showNotification() {
   var p = document.getElementById("notification");
@@ -344,25 +496,12 @@ function showNotification() {
   p.style.color = "white";
 }
 
-function makePage() {
-  showMain(true);
-  loadList();
-  state = "view";
-  for (i in entries) {
-    makeEntry(entries[i]);
-  }
-  var elements = document.getElementsByClassName("edit");
-  for (i=0; i<elements.length; i++) {
-    elements[i].style.display = "none";
-  }
-  if (items == "") {  
-    showNotification();
-  }
-}
+
 
 function switchView() {
   if (state=="view") {
-    editView()
+    editView();
+    state = "edit";
   } else {
     var elements = document.getElementsByClassName("edit");
     for (i=0; i<elements.length; i++) {
@@ -374,17 +513,42 @@ function switchView() {
   }
 }
 
+function makePage() {
+  showMain(true);
+  loadList();
+  state = "view";
+  for (i in entries) {
+    makeEntry(entries[i]);
+  }
+//  addAction();
+  var elements = document.getElementsByClassName("edit");
+  for (i=0; i<elements.length; i++) {
+    elements[i].style.display = "none";
+  }
+  var nActive = 0;
+  for (x in entries) {
+    if (entries[x].active) {
+      nActive += 1;
+    }
+  }
+  if (nActive == 0) {  
+    showNotification();
+  }
+}
+
+function printEntries() {
+  document.getElementById("out").innerHTML=items.toSource();
+}
+
 //TODO
 //menu: Clear
-//prompt: Remove entry
 //addCustomEntry()
-//addEntry()
 
 </script>
 </head>
 <body onload="makePage()">
 
-<div class="main">
+<div id ="mainView" class="main">
 <h1 class="menu" id="title">The Shopping List</h1>
 <p class="menu"><span id="navi" onclick="switchView()">Edit</span><span>Clear</span><br></p>
 
@@ -415,14 +579,23 @@ function switchView() {
 <div id="meat"></div>
 
 </div>
-<div class="side">
-<form id="theForm">
-Item: <input id="inputItem">
-Amount: <input id="inputAmount">
-Unit: <input id="inputUnit">
+<div id="sideView" class="side">
+<h1 class="menu" id="sidehead"></h1>
+<form id="theForm" style="color:white;">
+<label>Item:</label><input class="input" id="inputItem"><br>
+<label>Amount:</label><input class="input" id="inputAmount"><br>
+<label>Unit:</label><input class="input" id="inputUnit"><br>
 </form>
 <div id="buttons">
+<p id="editentry"></p>
+<p id="removeentry"></p>
+<p id="addentry"></p>
+<p id="cancel"></p>
 </div>
+</div>
+<div id="log">
+<p onclick="printEntries()">Print Entries</p>
+<div id ="out"></div>
 </div>
 </body>
 
