@@ -2,6 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="ostoslista.css">
+<meta name="viewport" content="width=320">
 <script>
 
 function getCookie(cname) {
@@ -461,7 +462,7 @@ function makeEntry(entry) {
   var entryId = i + "ID";
   if (entry.active) {
     p.className = t; //Set the class of the entry (affects visibility)
-    var headID = t.concat("Head");
+    var headID = t + "Head";
     document.getElementById(headID).className = "view"; //Set the class of the head
     var txt = getEntryText(i);
     p.innerHTML = txt;

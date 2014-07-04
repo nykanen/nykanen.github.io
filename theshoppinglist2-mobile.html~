@@ -205,24 +205,24 @@ var editItem = "";
 var editType = "";
 
 function itemClick() {
-  if (this.innerHTML == "+") {
+  if (this.innerHTML == "+") {//Custom item
     editType = this.id.slice(0,-6);
     editItem = "";
     editEntry();
-  } else {
+  } else {//Existing item
     var itemId = this.id;
     var item = itemId.slice(0,-2);
     editItem = item;
     var index = getIndex(item);
     editType = entries[index].type;
-    if (entries[index].active) {
-      if (state=="view") {
+    if (entries[index].active) {//Active item (AI)
+      if (state=="view") {//AI in view mode
         check(this,item);
-      } else {
-        addDefault();
+      } else {//AI in edit mode
+        editEntry();
       }
-    } else {
-      editEntry();
+    } else {//Inactive item (edit mode)
+      addDefault();
     }
   }
 }
