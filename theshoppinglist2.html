@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="ostoslista.css">
+<link rel="stylesheet" type="text/css" href="ostoslista2.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
 
 function getCookie(cname) {
@@ -21,16 +22,26 @@ function setCookie(cname,cvalue,exdays) {
   document.cookie = cname+"="+cvalue+"; "+expires+"; domain=nykanen.github.io; path=/";
 }
 
-function getType(index) {
-  var n = type.charCodeAt(index);
-  return n;
-}
 
+/*
+A string listing the types of entries with single characters.
+An item items[n] has the type type[n].
+*/
+var type;
+
+/*Converts the type to a letter*/
 function convertType(t) {
   var typelist = {bakery:"b",dairy:"d",dry:"D",drinks:"r",fish:"f",greens:"g",hyg:"h",meat:"m"};
   return typelist[t];
 }
 
+/*Converts a type character into a number*/
+function getType(index) {
+  var n = type.charCodeAt(index);
+  return n;
+}
+
+/*Translates a type number into a word*/
 function getClass(n) {
   switch (n) {
     case "b".charCodeAt(0): //Bakery
@@ -60,6 +71,8 @@ function getClass(n) {
   }  
 }
 
+
+/*Array of objects representing the items*/
 var entries;
 
 //Default entries
@@ -103,35 +116,25 @@ entries = [
 {item:'Wheat flour',type:'dry',unit:'kg',amount:1,active:false}
 ]
 
-//Required for loading a saved shopping list
-function entriesIndex(item) {
-  for (i = 0; i < entries.length; i++) {
-    if (entries[i].item == item) {
-      return i;
-      break;
-    }
-  }
-  return -1;
-}
-
-//Sorting function for object array
-// http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
-function compare(a,b) {
-  if (a.item < b.item)
-     return -1;
-  if (a.item > b.item)
-    return 1;
-  return 0;
-}
-
-var type;
+/*
+List of all items (active and inactive).
+Used for the indexing of the entries array.
+*/
 var items = [];
 
+/*
+Get the index of an item
+*/
 function getIndex(item) {
   var index = items.indexOf(item);
   return index;
 }
 
+
+/*
+Load entries from the cookies
+and update the entries array.
+*/
 function loadList() {
   var itemsRaw = getCookie("items");
   if (itemsRaw != "") {
@@ -171,48 +174,33 @@ function loadList() {
   }
 }
 
-function getEntryText(item) {
-  var index = getIndex(item);
-  var a = entries[index].amount;
-  var u = entries[index].unit;
-  var i = item;
-  var txt;
-  if (u == "-") {
-    if (a == 1) {
-      txt = i; // a=1 u=- => txt = item
-    } else {
-      txt = a + " " + i; // a!=1 u=- => txt= a item
+//Required for loading a shopping list from cookies
+function entriesIndex(item) {
+  for (i = 0; i < entries.length; i++) {
+    if (entries[i].item == item) {
+      return i;
+      break;
     }
-  } else {
-    txt = a + u + " " + item; // u!=- => txt = au item
   }
-  return txt;
+  return -1;
 }
 
-var checkList = [];
-
-function check(e,item) {
-//  var entryId = item + "ID";
-  var index = getIndex(item);
-//  var e = document.getElementById(entryId);
-  var cn = e.className;
-  if (cn != "checked") {
-    e.className = "checked";
-  } else {
-    e.className = entries[index].type;
-  }
-/*  var checkIndex = checkList.indexOf(item);
-  if (checkIndex == -1) {
-    checkList.push(item);
-  } else {
-    checkList.splice(checkIndex,1);
-  }*/
+/*
+Sorting function for object array
+http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
+*/
+function compare(a,b) {
+  if (a.item < b.item)
+     return -1;
+  if (a.item > b.item)
+    return 1;
+  return 0;
 }
 
-var state = "view";
+
 
 var editItem = "";
-var editType= "";
+var editType = "";
 
 function itemClick() {
   var itemId = this.id;
@@ -231,65 +219,71 @@ function itemClick() {
   }
 }
 
-function showMain(b) {
-  var main;
-  var side;
-  if (b) {
-    main = "block";
-    side = "none";
+//Check or uncheck item in the view mode
+function check(e,item) {
+  var index = getIndex(item);
+  var cn = e.className;
+  if (cn != "checked") {
+    e.className = "checked";
   } else {
-    main = "none";
-    side = "block";
+    e.className = entries[index].type;
   }
-  document.getElementById("mainView").style.display=main;
-  document.getElementById("sideView").style.display=side;
+}
+
+
+function showMain(b) {
+  if (b) {
+    $("#mainView").show();
+    $("#sideView").hide();
+  } else {
+    $("#mainView").hide();
+    $("#sideView").show();
+  }
 }
 
 function showForm(b) {
-  var show;
   if (b) {
-    show = "inline";
+    $("#theForm").show();
+    $("#addentry").show();
   } else {
-    show = "none";
+    $("#theForm").hide();
+    $("#addentry").hide();
   }
-  document.getElementById("theForm").style.display=show;
-  document.getElementById("addentry").style.display=show;
 }
 
 function showPrompt(b) {
-  var show;
   if (b) {
-    show = "block";
+    $("#editentry").show();
+    $("#removeentry").show();
   } else {
-    show = "none";
+    $("#editentry").hide();
+    $("#removeentry").hide();
   }
-  document.getElementById("editentry").style.display=show;
-  document.getElementById("removeentry").style.display=show;
 }
+
 
 function promptView(item) {
   showMain(false);
   showForm(false);
   showPrompt(true);
-  var div = document.getElementById("sideView");
-  var h = document.getElementById("sidehead");
-  h.className = "menu";
-  h.innerHTML = getEntryText(item);
-  var p1 = document.getElementById("editentry");
-  p1.className = "prompt";
-  p1.innerHTML = "Edit entry";
-  p1.addEventListener("click",editEntry,false);
-  var p2 = document.getElementById("removeentry");
-  p2.className = "prompt";
-  p2.innerHTML = "Remove entry";
-  p2.addEventListener("click",removeEntry,false);
-  var p3 = document.getElementById("cancel");
-  p3.className = "prompt";
-  p3.innerHTML = "Cancel";
-  p3.addEventListener("click",editView,false);
+  $("#sidehead")
+    .attr("class","menu")
+    .text(getEntryText(item));
+  $("#editentry")
+    .attr("class","prompt")
+    .text("Edit entry")
+    .on("click",editEntry);
+  $("#removeentry")
+    .attr("class","prompt")
+    .text("Remove entry")
+    .on("click",removeEntry);
+  $("#cancel")
+    .attr("class","prompt")
+    .text("Cancel")
+    .on("click",editView);
 }
 
-function removeEntry() { //TODO: check if the div has children after the removal
+function removeEntry() {
   var item = editItem;
   var index = getIndex(item);
   entries[index].amount = 1;
@@ -324,6 +318,25 @@ function editView() {
   }
   document.getElementById("title").innerHTML="Edit List";
   document.getElementById("navi").innerHTML="Home";
+}
+
+//Construct the text for an entry
+function getEntryText(item) {
+  var index = getIndex(item);
+  var a = entries[index].amount;
+  var u = entries[index].unit;
+  var i = item;
+  var txt;
+  if (u == "-") {
+    if (a == 1) {
+      txt = i; // a=1 u=- => txt = item
+    } else {
+      txt = a + " " + i; // a!=1 u=- => txt= a item
+    }
+  } else {
+    txt = a + u + " " + item; // u!=- => txt = au item
+  }
+  return txt;
 }
 
 function editEntry() {//TODO
@@ -397,6 +410,7 @@ function addEntry() {
   editView();
 }
 
+//Insert a non-default entry to its rightful place
 function addNewItem(item) {
   var index = getIndex(item);
   var type = entries[index].type;
@@ -415,17 +429,27 @@ function addNewItem(item) {
   p.className = type;
   p.id = item + "ID";
   p.addEventListener("click",itemClick,false);
+/*  var div, p;
+  div = $("#"+type);
+  p = $("<p></p>")
+        .text(getEntryText(item))
+        .attr("class",type)
+        .attr("id",item + "ID")
+        .on("click",itemClick);*/
   var lastIndex = itemsOfAType.length - 1;
   if (itemsOfAType.length == 1 || typeIndex == lastIndex) {
     div.appendChild(p);
+//     div.append(p);
   } else {
     var next = itemsOfAType[typeIndex + 1];
     var nextId = next + "ID";
     var pn = document.getElementById(nextId);
     div.insertBefore(p,pn);
+//    $("#"+nextId).before(p);
   }
 }
 
+//Save the active entries to cookies
 function writeCookie() {
   var itemsEntry = "";
   var amountsEntry = "";
@@ -454,6 +478,10 @@ function writeCookie() {
   setCookie("type",typesEntry,100);
 }
 
+/*
+Create the looks for an entry
+and display it
+*/
 function makeEntry(entry) {
   var i = entry.item;
   var t = entry.type;
@@ -480,28 +508,27 @@ function makeEntry(entry) {
 }
 
 function showNotification() {
-  var p = document.getElementById("notification");
-  p.innerHTML = "You have no shopping list. Create a new list!";
-  p.addEventListener("click",editView,false);
-  p.style.color = "white";
+  $("#notification")
+    .text("You have no shopping list. Create a new list!")
+    .css("color","white")
+    .on("click",switchMode);
 }
 
 
-
-function switchView() {
+//Switch between view and edit mode
+function switchMode() {
   if (state=="view") {
     editView();
     state = "edit";
   } else {
-    var elements = document.getElementsByClassName("edit");
-    for (i=0; i<elements.length; i++) {
-      elements[i].style.display = "none";
-    }
-    document.getElementById("title").innerHTML="The Shopping List";
-    document.getElementById("navi").innerHTML="Edit";
+    $(".edit").hide();
+    $("#title").text("The Shopping List");
+    $("#navi").text("Edit");
     state = "view";
   }
 }
+
+var state;
 
 function makePage() {
   showMain(true);
@@ -510,11 +537,7 @@ function makePage() {
   for (i in entries) {
     makeEntry(entries[i]);
   }
-//  addAction();
-  var elements = document.getElementsByClassName("edit");
-  for (i=0; i<elements.length; i++) {
-    elements[i].style.display = "none";
-  }
+  $(".edit").hide();
   var nActive = 0;
   for (x in entries) {
     if (entries[x].active) {
@@ -526,6 +549,10 @@ function makePage() {
   }
 }
 
+
+
+
+//Debugging tool
 function printEntries() {
   document.getElementById("out").innerHTML=items.toSource();
 }
@@ -540,7 +567,7 @@ function printEntries() {
 
 <div id ="mainView" class="main">
 <h1 class="menu" id="title">The Shopping List</h1>
-<p class="menu"><span id="navi" onclick="switchView()">Edit</span><span>Clear</span><br></p>
+<p class="menu"><span id="navi" onclick="switchMode()">Edit</span><span>Clear</span><br></p>
 
 <p id="notification"></p>
 

@@ -295,6 +295,18 @@ function removeEntry() { //TODO: check if the div has children after the removal
   entries[index].amount = 1;
   entries[index].unit = "-";
   entries[index].active = false;
+  var type = entries[index].type;
+  var nActiveEntries = 0;
+  for (x in entries) {
+    if (entries[x].type == type) {
+      if (entries[x].active) {
+        nActiveEntries += 1;
+      }
+    }
+  }
+  if (nActiveEntries == 0) {
+    document.getElementById(type+"Head").className = "edit";
+  }
   var entryID = item + "ID";
   var e = document.getElementById(entryID);
   e.innerHTML = item;
@@ -326,13 +338,14 @@ function editEntry() {//TODO
   var h = document.getElementById("sidehead");
   h.innerHTML = "Edit Entry";
   var itemInput = document.getElementById("inputItem");
-  itemInput.setAttribute("value",item);
+  itemInput.value = item;
   var amountInput = document.getElementById("inputAmount");
-  amountInput.setAttribute("value",a);
+  amountInput.value = a;
   var unitInput = document.getElementById("inputUnit");
-  if (u != "-") {
-    unitInput.setAttribute("value",u);
-  } else {
+  unitInput.value = u;
+  if (u == "-") {
+//    unitInput.setAttribute("value",u);
+//  } else {
     unitInput.setAttribute("placeholder","l, kg, ...");
   }
   var p1 = document.getElementById("addentry");
@@ -465,29 +478,6 @@ function makeEntry(entry) {
     div.appendChild(p);
   }
 }
-
-/*function addAction() {
-  for (x in items) {
-//    var entryId = items[x] + "ID";
-//    var p = document.getElementById(entryId);
-//    p.addEventListener("click",itemClick(items[x]),false);
-    addItemAction(items[x]);
-  }
-}
-
-function addItemAction(item) {
-  var entryId = item + "ID";
-  var oldP = document.getElementById(entryId);
-  var newP = document.createElement("p");
-  var index = getIndex(item);
-  var type = entries[index].type;
-  var div = document.getElementById(type + "Head");
-  newP.className = type;
-  newP.innerHTML = getEntryText(item);
-  newP.id = entryId;
-  newP.addEventListener("click",itemClick(item),false);
-  div.replaceChild(newP,oldP);
-}*/
 
 function showNotification() {
   var p = document.getElementById("notification");

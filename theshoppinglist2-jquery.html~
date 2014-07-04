@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="ostoslista.css">
+<link rel="stylesheet" type="text/css" href="ostoslista2.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
 
 function getCookie(cname) {
@@ -21,16 +22,26 @@ function setCookie(cname,cvalue,exdays) {
   document.cookie = cname+"="+cvalue+"; "+expires+"; domain=nykanen.github.io; path=/";
 }
 
-function getType(index) {
-  var n = type.charCodeAt(index);
-  return n;
-}
 
+/*
+A string listing the types of entries with single characters.
+An item items[n] has the type type[n].
+*/
+var type;
+
+/*Converts the type to a letter*/
 function convertType(t) {
   var typelist = {bakery:"b",dairy:"d",dry:"D",drinks:"r",fish:"f",greens:"g",hyg:"h",meat:"m"};
   return typelist[t];
 }
 
+/*Converts a type character into a number*/
+function getType(index) {
+  var n = type.charCodeAt(index);
+  return n;
+}
+
+/*Translates a type number into a word*/
 function getClass(n) {
   switch (n) {
     case "b".charCodeAt(0): //Bakery
@@ -60,6 +71,8 @@ function getClass(n) {
   }  
 }
 
+
+/*Array of objects representing the items*/
 var entries;
 
 //Default entries
@@ -103,35 +116,25 @@ entries = [
 {item:'Wheat flour',type:'dry',unit:'kg',amount:1,active:false}
 ]
 
-//Required for loading a saved shopping list
-function entriesIndex(item) {
-  for (i = 0; i < entries.length; i++) {
-    if (entries[i].item == item) {
-      return i;
-      break;
-    }
-  }
-  return -1;
-}
-
-//Sorting function for object array
-// http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
-function compare(a,b) {
-  if (a.item < b.item)
-     return -1;
-  if (a.item > b.item)
-    return 1;
-  return 0;
-}
-
-var type;
+/*
+List of all items (active and inactive).
+Used for the indexing of the entries array.
+*/
 var items = [];
 
+/*
+Get the index of an item
+*/
 function getIndex(item) {
   var index = items.indexOf(item);
   return index;
 }
 
+
+/*
+Load entries from the cookies
+and update the entries array.
+*/
 function loadList() {
   var itemsRaw = getCookie("items");
   if (itemsRaw != "") {
@@ -171,6 +174,158 @@ function loadList() {
   }
 }
 
+//Required for loading a shopping list from cookies
+function entriesIndex(item) {
+  for (i = 0; i < entries.length; i++) {
+    if (entries[i].item == item) {
+      return i;
+      break;
+    }
+  }
+  return -1;
+}
+
+/*
+Sorting function for object array
+http://stackoverflow.com/questions/1129216/sorting-objects-in-an-array-by-a-field-value-in-javascript
+*/
+function compare(a,b) {
+  var A = a.item.toUpperCase();
+  var B = b.item.toUpperCase();
+  if (A < B)
+     return -1;
+  if (A > B)
+    return 1;
+  return 0;
+}
+
+
+
+var editItem = "";
+var editType = "";
+
+function itemClick() {
+  if (this.innerHTML == "+") {
+    editType = this.id.slice(0,-6);
+    editItem = "";
+    editEntry();
+  } else {
+    var itemId = this.id;
+    var item = itemId.slice(0,-2);
+    editItem = item;
+    var index = getIndex(item);
+    editType = entries[index].type;
+    if (entries[index].active) {
+      if (state=="view") {
+        check(this,item);
+      } else {
+        promptView(item);
+      }
+    } else {
+      editEntry();
+    }
+  }
+}
+
+//Check or uncheck item in the view mode
+function check(e,item) {
+  var index = getIndex(item);
+  var cn = e.className;
+  if (cn != "checked") {
+    e.className = "checked";
+  } else {
+    e.className = entries[index].type;
+  }
+}
+
+
+function showMain(b) {
+  if (b) {
+    $("#mainView").show();
+    $("#sideView").hide();
+  } else {
+    $("#mainView").hide();
+    $("#sideView").show();
+  }
+}
+
+function showForm(b) {
+  if (b) {
+    $("#theForm").show();
+    $("#addentry").show();
+  } else {
+    $("#theForm").hide();
+    $("#addentry").hide();
+  }
+}
+
+function showPrompt(b) {
+  if (b) {
+    $("#editentry").show();
+    $("#removeentry").show();
+  } else {
+    $("#editentry").hide();
+    $("#removeentry").hide();
+  }
+}
+
+
+function promptView(item) {
+  showMain(false);
+  showForm(false);
+  showPrompt(true);
+  $("#sidehead")
+    .attr("class","menu")
+    .text(getEntryText(item));
+  $("#editentry")
+    .attr("class","prompt")
+    .text("Edit entry")
+    .on("click",editEntry);
+  $("#removeentry")
+    .attr("class","prompt")
+    .text("Remove entry")
+    .on("click",removeEntry);
+  $("#cancel")
+    .attr("class","prompt")
+    .text("Cancel")
+    .on("click",editView);
+}
+
+function removeEntry() {
+  var item = editItem;
+  var index = getIndex(item);
+  entries[index].amount = 1; //TODO: Change to take it from the defaultList
+  entries[index].unit = "-"; //TODO: Change to take it from the defaultList
+  entries[index].active = false;
+  var type = entries[index].type;
+  var nActiveEntries = 0;
+  for (x in entries) {
+    if (entries[x].type == type) {
+      if (entries[x].active) {
+        nActiveEntries += 1;
+      }
+    }
+  }
+  if (nActiveEntries == 0) {
+    $("#"+type+"Head").attr("class","edit");
+  }
+  var entryID = item + "ID";
+  $("[id=\""+entryID+"\"]")
+    .text(item)
+    .attr("class","edit");
+  writeCookie();
+  editView();
+}
+
+function editView() {
+  showMain(true);
+  $("#notification").hide();
+  $(".edit").show();
+  $("#title").text("Edit List");
+  $("#navi").text("View");
+}
+
+//Construct the text for an entry
 function getEntryText(item) {
   var index = getIndex(item);
   var a = entries[index].amount;
@@ -189,214 +344,84 @@ function getEntryText(item) {
   return txt;
 }
 
-var checkList = [];
-
-function check(e,item) {
-//  var entryId = item + "ID";
-  var index = getIndex(item);
-//  var e = document.getElementById(entryId);
-  var cn = e.className;
-  if (cn != "checked") {
-    e.className = "checked";
-  } else {
-    e.className = entries[index].type;
-  }
-/*  var checkIndex = checkList.indexOf(item);
-  if (checkIndex == -1) {
-    checkList.push(item);
-  } else {
-    checkList.splice(checkIndex,1);
-  }*/
-}
-
-var state = "view";
-
-var editItem = "";
-var editType= "";
-
-function itemClick() {
-  var itemId = this.id;
-  var item = itemId.slice(0,-2);
-  editItem = item;
-  var index = getIndex(item);
-  editType = entries[index].type;
-  if (entries[index].active) {
-    if (state=="view") {
-      check(this,item);
-    } else {
-      promptView(item);
-    }
-  } else {
-    editEntry();
-  }
-}
-
-function showMain(b) {
-  var main;
-  var side;
-  if (b) {
-    main = "block";
-    side = "none";
-  } else {
-    main = "none";
-    side = "block";
-  }
-  document.getElementById("mainView").style.display=main;
-  document.getElementById("sideView").style.display=side;
-}
-
-function showForm(b) {
-  var show;
-  if (b) {
-    show = "inline";
-  } else {
-    show = "none";
-  }
-  document.getElementById("theForm").style.display=show;
-  document.getElementById("addentry").style.display=show;
-}
-
-function showPrompt(b) {
-  var show;
-  if (b) {
-    show = "block";
-  } else {
-    show = "none";
-  }
-  document.getElementById("editentry").style.display=show;
-  document.getElementById("removeentry").style.display=show;
-}
-
-function promptView(item) {
-  showMain(false);
-  showForm(false);
-  showPrompt(true);
-  var div = document.getElementById("sideView");
-  var h = document.getElementById("sidehead");
-  h.className = "menu";
-  h.innerHTML = getEntryText(item);
-  var p1 = document.getElementById("editentry");
-  p1.className = "prompt";
-  p1.innerHTML = "Edit entry";
-  p1.addEventListener("click",editEntry,false);
-  var p2 = document.getElementById("removeentry");
-  p2.className = "prompt";
-  p2.innerHTML = "Remove entry";
-  p2.addEventListener("click",removeEntry,false);
-  var p3 = document.getElementById("cancel");
-  p3.className = "prompt";
-  p3.innerHTML = "Cancel";
-  p3.addEventListener("click",editView,false);
-}
-
-function removeEntry() { //TODO: check if the div has children after the removal
-  var item = editItem;
-  var index = getIndex(item);
-  entries[index].amount = 1;
-  entries[index].unit = "-";
-  entries[index].active = false;
-  var type = entries[index].type;
-  var nActiveEntries = 0;
-  for (x in entries) {
-    if (entries[x].type == type) {
-      if (entries[x].active) {
-        nActiveEntries += 1;
-      }
-    }
-  }
-  if (nActiveEntries == 0) {
-    document.getElementById(type+"Head").className = "edit";
-  }
-  var entryID = item + "ID";
-  var e = document.getElementById(entryID);
-  e.innerHTML = item;
-  e.className = "edit";
-  writeCookie();
-  editView();
-}
-
-function editView() {
-  showMain(true);
-  document.getElementById("notification").style.display = "none";
-  var elements = document.getElementsByClassName("edit");
-  for (i=0; i<elements.length; i++) {
-    elements[i].style.display = "block";
-  }
-  document.getElementById("title").innerHTML="Edit List";
-  document.getElementById("navi").innerHTML="Home";
-}
-
-function editEntry() {//TODO
+function editEntry() {
   showMain(false);
   showForm(true);
   showPrompt(false);
   var item = editItem;
   var index = getIndex(item);
-  var a = entries[index].amount;
-  var u = entries[index].unit;
-  var t = entries[index].type;
-  var h = document.getElementById("sidehead");
-  h.innerHTML = "Edit Entry";
-  var itemInput = document.getElementById("inputItem");
-  itemInput.value = item;
-  var amountInput = document.getElementById("inputAmount");
-  amountInput.value = a;
-  var unitInput = document.getElementById("inputUnit");
-  unitInput.value = u;
-  if (u == "-") {
-//    unitInput.setAttribute("value",u);
-//  } else {
-    unitInput.setAttribute("placeholder","l, kg, ...");
+  var a, u, t;
+  if (index == -1) {
+    a = 1;
+    u = "-";
+    t = editType;
+  } else {
+    a = entries[index].amount;
+    u = entries[index].unit;
+    t = entries[index].type;
   }
-  var p1 = document.getElementById("addentry");
-  p1.className = "button";
-  p1.innerHTML = "Add entry";
-  p1.addEventListener("click",addEntry,false);
-  var p2 = document.getElementById("cancel");
-  p2.className = "button";
-  p2.innerHTML = "Cancel";
-  p2.addEventListener("click",editView,false);
+  $("#sidehead").text("Edit Entry");
+  $("#inputItem").prop("value",item);
+  $("#inputAmount").prop("value",a);
+  $("#inputUnit").prop("value",u);
+  if (u == "-") {
+    $("#inputUnit").prop("value","");
+    $("#inputUnit").prop("placeholder","l, kg, ...");
+  }
+  $("#addentry")
+    .attr("class","button")
+    .text("Add entry")
+    .on("click",addEntry);
+  $("#cancel")
+    .attr("class","button")
+    .text("Cancel")
+    .on("click",editView);
 }
 
 function addEntry() {
   //Read input fields
-  var item = document.getElementById("inputItem").value;
-  var amount = document.getElementById("inputAmount").value;
-  var unit = document.getElementById("inputUnit").value;
-  if (unit == "") {
-    unit = "-";
-  }
-  var type = editType;
-  //Make the heading visible
-  document.getElementById(type+"Head").className="view";
-  var index = getIndex(item);
-  if (index == -1) { //add a new item
-    var entry = {};
-    entry.item = item;
-    entry.amount = amount;
-    entry.unit = unit;
-    entry.type = type;
-    entry.active = true;
-    entries.push(entry);
-    entries.sort(compare);
-    items = [];
-    for (x in entries) {
-      items[x] = entries[x].item;
+  var item = $("#inputItem").val().trim();
+  if (item == "") {
+    editView();
+  } else {
+    var amount = $("#inputAmount").val();
+    var unit = $("#inputUnit").val();
+    if (unit == "") {
+      unit = "-";
     }
-    addNewItem(item);
-  } else { //edit an old item
-    entries[index].amount = amount;
-    entries[index].unit = unit;
-    entries[index].active = true;
-    itemId = item + "ID";
-    var e = document.getElementById(itemId);
-    e.innerHTML = getEntryText(item);
-    e.className = entries[index].type;
+    var type = editType;
+    //Make the heading visible
+    $("#"+type+"Head").attr("class","view");
+    var index = getIndex(item);
+    if (index == -1) { //add a new item
+      var entry = {};
+      entry.item = item;
+      entry.amount = amount;
+      entry.unit = unit;
+      entry.type = type;
+      entry.active = true;
+      entries.push(entry);
+      entries.sort(compare);
+      items = [];
+      for (x in entries) {
+        items[x] = entries[x].item;
+      }
+      addNewItem(item);
+    } else { //edit an old item
+      entries[index].amount = amount;
+      entries[index].unit = unit;
+      entries[index].active = true;
+      itemId = item + "ID";
+      $("[id=\""+itemId+"\"]")
+        .text(getEntryText(item))
+        .attr("class",entries[index].type);
+    }
+    writeCookie();  
+    editView();
   }
-  writeCookie();  
-  editView();
 }
 
+//Insert a non-default entry to its rightful place
 function addNewItem(item) {
   var index = getIndex(item);
   var type = entries[index].type;
@@ -409,23 +434,23 @@ function addNewItem(item) {
     }
   }
   var typeIndex = itemsOfAType.indexOf(item); //index of the item in the list_of_items
-  var div = document.getElementById(type);
-  var p = document.createElement("p");
-  p.innerHTML = getEntryText(item);
-  p.className = type;
-  p.id = item + "ID";
-  p.addEventListener("click",itemClick,false);
+  var div, p;
+  div = $("#"+type);
+  p = $("<p></p>")
+        .text(getEntryText(item))
+        .attr("class",type)
+        .attr("id",item + "ID");
   var lastIndex = itemsOfAType.length - 1;
   if (itemsOfAType.length == 1 || typeIndex == lastIndex) {
-    div.appendChild(p);
+     $("#"+type+"Custom").before(p);
   } else {
     var next = itemsOfAType[typeIndex + 1];
     var nextId = next + "ID";
-    var pn = document.getElementById(nextId);
-    div.insertBefore(p,pn);
+    $("#"+nextId).before(p);
   }
 }
 
+//Save the active entries to cookies
 function writeCookie() {
   var itemsEntry = "";
   var amountsEntry = "";
@@ -454,54 +479,74 @@ function writeCookie() {
   setCookie("type",typesEntry,100);
 }
 
+/*
+Create the looks for an entry
+and display it
+*/
 function makeEntry(entry) {
   var i = entry.item;
   var t = entry.type;
-  var p = document.createElement("p");
+  var p = $("<p></p>");
+//  var div = $("#"+t);
+  var custom = $("#"+t+"Custom");
   var entryId = i + "ID";
   if (entry.active) {
-    p.className = t; //Set the class of the entry (affects visibility)
     var headID = t + "Head";
-    document.getElementById(headID).className = "view"; //Set the class of the head
+    $("#"+headID).attr("class","view"); //Set the class of the head
     var txt = getEntryText(i);
-    p.innerHTML = txt;
-    p.id = entryId;
-    p.addEventListener("click",itemClick,false);
-    var div = document.getElementById(t);
-    div.appendChild(p);
+    p.text(txt)
+     .attr("class",t)
+     .attr("id",entryId)
+//    div.append(p);
+    custom.before(p);
   } else {
-    p.className = "edit";
-    p.innerHTML = i;
-    p.id = entryId;
-    p.addEventListener("click",itemClick,false);
-    var div = document.getElementById(t);
-    div.appendChild(p);
+    p.text(i)
+     .attr("class","edit")
+     .attr("id",entryId)
+//     div.append(p);
+    custom.before(p);
   }
 }
 
+//Remove 
+function clearList() {
+  if (confirm("Remove all entries?") == true) {
+    for (x in items) {
+      entries[x].active = false;
+      $("[id=\""+items[x]+"ID\"]") //TODO: fix also the amount and unit
+        .prop("class","edit")
+        .text(items[x]);
+      var type = entries[x].type;
+      $("#"+type+"Head").attr("class","edit");
+    }
+    writeCookie();
+    editView();
+  }
+}
+
+//Show in the beginning if there are no entries
 function showNotification() {
-  var p = document.getElementById("notification");
-  p.innerHTML = "You have no shopping list. Create a new list!";
-  p.addEventListener("click",editView,false);
-  p.style.color = "white";
+  $("#notification")
+    .text("You have no shopping list. Create a new list!")
+    .css("color","white")
+    .on("click",switchMode);
 }
 
 
-
-function switchView() {
+//Switch between view and edit mode
+function switchMode() {
   if (state=="view") {
     editView();
     state = "edit";
   } else {
-    var elements = document.getElementsByClassName("edit");
-    for (i=0; i<elements.length; i++) {
-      elements[i].style.display = "none";
-    }
-    document.getElementById("title").innerHTML="The Shopping List";
-    document.getElementById("navi").innerHTML="Edit";
+    $(".edit").hide();
+    $("#title").text("The Shopping List");
+    $("#navi").text("Edit");
     state = "view";
   }
 }
+
+var state;
 
 function makePage() {
   showMain(true);
@@ -510,11 +555,7 @@ function makePage() {
   for (i in entries) {
     makeEntry(entries[i]);
   }
-//  addAction();
-  var elements = document.getElementsByClassName("edit");
-  for (i=0; i<elements.length; i++) {
-    elements[i].style.display = "none";
-  }
+  $(".edit").hide();
   var nActive = 0;
   for (x in entries) {
     if (entries[x].active) {
@@ -524,10 +565,16 @@ function makePage() {
   if (nActive == 0) {  
     showNotification();
   }
+  $(".main > div").on("click","p",itemClick);
 }
 
+//Add event listeners
+
+
+
+//Debugging tool
 function printEntries() {
-  document.getElementById("out").innerHTML=items.toSource();
+  document.getElementById("out").innerHTML=entries[1].toSource();
 }
 
 //TODO
@@ -540,33 +587,50 @@ function printEntries() {
 
 <div id ="mainView" class="main">
 <h1 class="menu" id="title">The Shopping List</h1>
-<p class="menu"><span id="navi" onclick="switchView()">Edit</span><span>Clear</span><br></p>
+<p class="menu"><span id="navi" onclick="switchMode()">Edit</span>
+<span onclick="clearList()">Clear</span><br></p>
 
 <p id="notification"></p>
 
 <h1 class="edit" id="bakeryHead">Bakery products</h1>
-<div id="bakery"></div>
+<div id="bakery">
+<p class="edit" id="bakeryCustom">+</p>
+</div>
 
 <h1 class="edit" id="dairyHead">Dairy products</h1>
-<div id="dairy"></div>
+<div id="dairy">
+<p class="edit" id="dairyCustom">+</p>
+</div>
 
 <h1 class="edit" id="drinksHead">Drinks</h1>
-<div id="drinks"></div>
+<div id="drinks">
+<p class="edit" id="drinksCustom">+</p>
+</div>
 
 <h1 class="edit" id="dryHead">Dry goods</h1>
-<div id="dry"></div>
+<div id="dry">
+<p class="edit" id="dryCustom">+</p>
+</div>
 
 <h1 class="edit" id="fishHead">Fish</h1>
-<div id="fish"></div>
+<div id="fish">
+<p class="edit" id="fishCustom">+</p>
+</div>
 
 <h1 class="edit" id="greensHead">Fruits and vegetables</h1>
-<div id="greens"></div>
+<div id="greens">
+<p class="edit" id="greensCustom">+</p>
+</div>
 
 <h1 class="edit" id="hygHead">Hygiene products</h1>
-<div id="hyg"></div>
+<div id="hyg">
+<p class="edit" id="hygCustom">+</p>
+</div>
 
 <h1 class="edit" id="meatHead">Meat products</h1>
-<div id="meat"></div>
+<div id="meat">
+<p class="edit" id="meatCustom">+</p>
+</div>
 
 </div>
 <div id="sideView" class="side">
