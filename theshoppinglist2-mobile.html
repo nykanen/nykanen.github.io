@@ -408,7 +408,7 @@ function addEntry() {
       entry.type = type;
       entry.active = true;
       entries.push(entry);
-      entries.sort(compare);
+      entries.sort(compare); //sort the entries anew
       items = [];
       for (x in entries) {
         items[x] = entries[x].item;
@@ -417,11 +417,11 @@ function addEntry() {
     } else { //edit an old item
       entries[index].amount = amount;
       entries[index].unit = unit;
-      entries[index].active = true;
+//      entries[index].active = true;  //This is set already at first click
       itemId = item + "ID";
       $("[id=\""+itemId+"\"]")
-        .text(getEntryText(item))
-        .attr("class",entries[index].type);
+        .text(getEntryText(item));
+//        .attr("class",entries[index].type); // This is set already at first click
     }
     writeCookie();  
     editView();
@@ -437,10 +437,21 @@ function addDefault() {
   entries[index].active = true;
   itemId = item + "ID";
   $("[id=\""+itemId+"\"]").attr("class",entries[index].type);
+  var entriesOfAType = []; //indices of items of a type type
+  for (x in entries) {
+    if (entries[x].type == type) {
+      entriesOfAType.push(x);
+    }
+  }
+  for (x in entriesOfAType) { //write down what is the last active item of a type type
+    if (entries[entriesOfAType[x]].active == true) {
+      lastItems[type]=entries[entriesOfAType[x]].item;
+    }
+  }
   writeCookie();
 }
 
-//Insert a non-default entry to its rightful place
+//Insert a non-default entry to its rightful place in edit and view mode
 function addNewItem(item) {
   var index = getIndex(item);
   var type = entries[index].type;
@@ -450,6 +461,11 @@ function addNewItem(item) {
     if (entries[x].type == type) {
       entriesOfAType.push(x);
       itemsOfAType.push(entries[x].item);
+    }
+  }
+  for (x in itemsOfAType) {
+    if (itemsOfAType[x].active == true) {
+      lastItems[type] = itemsOfAType[x];
     }
   }
   var typeIndex = itemsOfAType.indexOf(item); //index of the item in the list_of_items
@@ -497,6 +513,9 @@ function writeCookie() {
   setCookie("units",unitsEntry,100);
   setCookie("type",typesEntry,100);
 }
+
+//Needed for setting the margins between items and headings in view mode
+var lastItems = {};
 
 /*
 Create the looks for an entry
@@ -558,11 +577,17 @@ function switchMode() {
   if (state=="view") {
     editView();
     state = "edit";
+    for (x in lastItems) {
+      $("[id=\""+items[x]+"ID\"]").css("bottom-margin: 0.1em;");
+    }
   } else {
     $(".edit").hide();
     $("#title").text("The Shopping List");
     $("#navi").text("Edit");
     state = "view";
+    for (x in lastItems) {
+      $("[id=\""+lastItems[x]+"ID\"]").css("margin-bottom","1em");
+    }
   }
 }
 
@@ -588,27 +613,22 @@ function makePage() {
   $(".main > div").on("click","p",itemClick);
 }
 
-//Add event listeners
-
-
-
-//Debugging tool
-function printEntries() {
-  document.getElementById("out").innerHTML=entries[1].toSource();
-}
-
-//TODO
-//menu: Clear
-//addCustomEntry()
-
 </script>
 </head>
 <body onload="makePage()">
 
 <div id ="mainView" class="main">
+<div class="menu">
 <h1 class="menu" id="title">The Shopping List</h1>
 <p class="menu"><span id="navi" onclick="switchMode()">Edit</span>
-<span onclick="clearList()">Clear</span><br></p>
+<span onclick="clearList()">Clear</span><br></p><br>
+<div class="bar"></div>
+</div>
+<div>
+<h1 class="dummy" style="color:black;">The Shopping List</h1>
+<p class="dummy" style="color:black;border-color:black;"><span>Edit</span>
+<span>Clear</span><br></p>
+</div>
 
 <p id="notification"></p>
 
@@ -622,10 +642,12 @@ function printEntries() {
 <p class="edit" id="dairyCustom">+</p>
 </div>
 
+
 <h1 class="edit" id="drinksHead">Drinks</h1>
 <div id="drinks">
 <p class="edit" id="drinksCustom">+</p>
 </div>
+
 
 <h1 class="edit" id="dryHead">Dry goods</h1>
 <div id="dry">
@@ -654,7 +676,7 @@ function printEntries() {
 
 </div>
 <div id="sideView" class="side">
-<h1 class="menu" id="sidehead"></h1>
+<h1 class="menu" id="sidehead" style="background-color:black;"></h1>
 <form id="theForm" style="color:white;">
 <label>Item:</label><input class="input" id="inputItem"><br>
 <label>Amount:</label><input class="input" id="inputAmount"><br>
@@ -667,9 +689,5 @@ function printEntries() {
 <p id="cancel"></p>
 </div>
 </div>
-<!--div id="log">
-<p onclick="printEntries()">Print Entries</p>
-<div id ="out"></div>
-</div-->
 </body>
 

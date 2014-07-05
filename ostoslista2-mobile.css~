@@ -10,10 +10,11 @@ h1, .view {
   color: white;
   clear: both;
   margin-bottom: 0.1em;
-  margin-top: 0px;
+  margin-top: 1em;
   background-color:black;
-  padding-top: 0.6em;
-  padding-bottom: 0px;
+  padding-top: 0.1em;
+  background-color: rgb(0,12,17);
+  border: 1px solid rgb(0,39,57);
 }
 
 h2 {
@@ -77,6 +78,7 @@ p {
   padding: 0.1em;
   border-style: solid;
   border-width: 0.1em;
+  border-color: white;
   margin: 0.1em;
   float: left;
 }
@@ -147,18 +149,19 @@ a:active {
 
 div.menu {
   position:fixed;
-  top:0.1em;
+  top:0em;
+  left:0em;
   text-align:center;
   display:block;
-  width:200px;
-  background-color:gray;
-  color:white
-  padding:0.1em;
-  margin-left: auto;
-  margin-right: auto;
+  width:100%;
+  background-color: rgb(77,35,14);
+  color:white;
+  padding:0em;
+/*  margin-left: auto;
+  margin-right: auto;*/
 }
 
-h1.menu {
+h1.menu, h1.dummy {
 /*  position:fixed;
   top:0;*/
   text-align:left;
@@ -170,32 +173,43 @@ h1.menu {
   margin-top: 0px;
   padding-top: 0em;
   padding-bottom: 0em;
+  background-color: rgb(77,35,14);
+  border: 0;
 }
 
-p.menu {
+p.menu, p.dummy {
   text-align: center;
   font-size: 0.6em;
   font-weight: bold;
   text-transform: uppercase;
-  color: gray;
-  background-color: black;
+/*  color: gray;*/
+  background-color: rgb(77,35,14);
   margin:1px;
-  margin-left:0.5em;
+  margin-left:0.3em;
   padding-top: 0;
   padding-bottom: 0;
   border: 0;
 }
 
-p.menu > span {
-  border: 1px solid gray;
-  background-color: black;
+p.menu > span, p.dummy > span {
+  border: 0.2em solid white;
+/*  background-color: black;*/
   margin:1px;
+  margin-bottom:0.1em;
   display: block;
   padding-left:1em;
   padding-right:1em;
   padding-top: 0.2em;
   padding-bottom: 0.1em;
   float: left;
+}
+
+.bar {
+  height:0.2em;
+  width:100%;
+  display:block;
+  background-color:rgb(0,108,128);
+  margin-top:0.2em;
 }
 
 .prompt {
@@ -235,7 +249,7 @@ p.menu > span {
 }
 
 .input {
-  width: 6em;
+  width: 4em;
 }
 
 /*#inputItem {
@@ -253,6 +267,7 @@ label {
   float: left;
   margin: 0.1em;
   text-align: right;
+  clear: left;
 }
 
 .main p:last-child {
@@ -260,11 +275,13 @@ label {
   padding-left:0.3em;
   padding-right:0.3em;
   border-radius: 0.2em;
+  margin-bottom: 1em;
 }
 
 #notification {
   clear: both;
   margin-top: 1em;
+  border: 0;
 }
 
 /*@media only screen and (max-device-width: 480px) {
@@ -274,5 +291,9 @@ label {
   height = auto;
   }
 
+}*/
+
+/*p[style="display: block;"]:last-of-type {
+  margin-bottom: 1em;
 }*/
 
