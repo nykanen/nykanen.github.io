@@ -154,7 +154,7 @@ div.menu {
   text-align:center;
   display:block;
   width:100%;
-  background-color: rgb(77,35,14);
+  background-color: rgb(0,70,0);
   color:white;
   padding:0em;
 /*  margin-left: auto;
@@ -173,7 +173,7 @@ h1.menu, h1.dummy {
   margin-top: 0px;
   padding-top: 0em;
   padding-bottom: 0em;
-  background-color: rgb(77,35,14);
+  background-color: rgb(0,70,0);
   border: 0;
 }
 
@@ -183,7 +183,7 @@ p.menu, p.dummy {
   font-weight: bold;
   text-transform: uppercase;
 /*  color: gray;*/
-  background-color: rgb(77,35,14);
+  background-color: rgb(0,70,0);
   margin:1px;
   margin-left:0.3em;
   padding-top: 0;

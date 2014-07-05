@@ -364,7 +364,7 @@ function editView() {
   $("#notification").hide();
   $(".edit").show();
   $("#title").text("Edit List");
-  $("#navi").text("View");
+  $("#navi").text("Show List");
 }
 
 //Construct the text for an entry
@@ -657,7 +657,7 @@ function switchMode() {
   } else {
     $(".edit").hide();
     $("#title").text("The Shopping List");
-    $("#navi").text("Edit");
+    $("#navi").text("Edit List");
     state = "view";
     lastItemMargin(true);
   }
