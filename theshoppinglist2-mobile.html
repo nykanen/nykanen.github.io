@@ -74,35 +74,35 @@ function getClass(n) {
 
 
 /*Array of objects representing the items*/
-var entries;
+var entries;//= new Array(entriesDefault.length);
 
 //Default entries
-entries = [
-{item:'Milk',type:'dairy',unit:'l',amount:1,active:false},
-{item:'Cheese',type:'dairy',unit:'pkg',amount:1,active:false},
+var entriesDefault = [
+{item:'Apple juice',type:'drinks',unit:'l',amount:1,active:false},
+{item:'Apples',type:'greens',unit:'kg',amount:0.5,active:false},
+{item:'Beer',type:'drinks',unit:'l',amount:0.5,active:false},
 {item:'Bread',type:'bakery',unit:'pkg',amount:1,active:false},
+{item:'Cheese',type:'dairy',unit:'pkg',amount:1,active:false},
+{item:'Chicken filet',type:'meat',unit:'g',amount:500,active:false},
+{item:'Cola',type:'drinks',unit:'l',amount:1.5,active:false},
+{item:'Cream',type:'dairy',unit:'dl',amount:2,active:false},
+{item:'Cucumber',type:'greens',unit:'kg',amount:0.5,active:false},
+{item:'Fresh cheese',type:'dairy',unit:'pkg',amount:1,active:false},
+{item:'Herring',type:'fish',unit:'g',amount:500,active:false},
 {item:'Toast',type:'bakery',unit:'pkg',amount:1,active:false},
 {item:'Minced meat',type:'meat',unit:'g',amount:500,active:false},
-{item:'Cream',type:'dairy',unit:'dl',amount:2,active:false},
-{item:'Fresh cheese',type:'dairy',unit:'pkg',amount:1,active:false},
-{item:'Cola',type:'drinks',unit:'l',amount:1.5,active:false},
+{item:'Milk',type:'dairy',unit:'l',amount:1,active:false},
 {item:'Orange juice',type:'drinks',unit:'l',amount:1,active:false},
-{item:'Apple juice',type:'drinks',unit:'l',amount:1,active:false},
 {item:'Sparkling water',type:'drinks',unit:'l',amount:1,active:false},
 {item:'Still water',type:'drinks',unit:'l',amount:1,active:false},
-{item:'Beer',type:'drinks',unit:'l',amount:0.5,active:false},
 {item:'Sausage',type:'meat',unit:'-',amount:1,active:false},
-{item:'Chicken filet',type:'meat',unit:'g',amount:500,active:false},
 {item:'Pork chops',type:'meat',unit:'g',amount:500,active:false},
 {item:'Salmon',type:'fish',unit:'kg',amount:1,active:false},
 {item:'Shrimps',type:'fish',unit:'g',amount:250,active:false},
 {item:'Trout',type:'fish',unit:'kg',amount:1,active:false},
-{item:'Herring',type:'fish',unit:'g',amount:500,active:false},
 {item:'Tuna',type:'fish',unit:'g',amount:500,active:false},
 {item:'Sushi',type:'fish',unit:'-',amount:1,active:false},
 {item:'Potatoes',type:'greens',unit:'kg',amount:1,active:false},
-{item:'Apples',type:'greens',unit:'kg',amount:0.5,active:false},
-{item:'Cucumber',type:'greens',unit:'kg',amount:0.5,active:false},
 {item:'Tomatoes',type:'greens',unit:'kg',amount:0.5,active:false},
 {item:'Oranges',type:'greens',unit:'kg',amount:0.5,active:false},
 {item:'Spam',type:'meat',unit:'g',amount:500,active:false},
@@ -115,7 +115,40 @@ entries = [
 {item:'Penne',type:'dry',unit:'g',amount:500,active:false},
 {item:'Rice',type:'dry',unit:'kg',amount:1,active:false},
 {item:'Wheat flour',type:'dry',unit:'kg',amount:1,active:false}
-]
+];
+
+/*function getDefaultEntries() {
+  entries = [];//new Array(entriesDefault.length);
+  entries.length = entriesDefault.length;
+  for (x in entriesDefault) {
+//    entries[x] = JSON.parse(JSON.stringify(entriesDefault[x]));
+    var i = getDefault(x,"item");
+    var a = getDefault(x,"amount");
+    var t = getDefault(x,"type");
+    var u = getDefault(x,"unit");
+    entries[x] = {item:i, type:t, unit:u, amount:a, active:false};
+  }  
+}*/
+
+entries = JSON.parse(JSON.stringify(entriesDefault));
+
+function getDefault(index,property) {
+  var value = entriesDefault[index][property];
+//  alert(index+" "+property+" "+value); 
+  return value;
+}
+
+function getDefaultItemIndex(item) {
+//  var entriesDefault = defaultEntries();
+  for (y=0; y< entriesDefault.length; y++) {
+    if (entriesDefault[y].item == item) {
+//      alert("getDefaultItemIndex"+y+" "+item+" "+entriesDefault[y].item);	
+      return y;
+      break;
+    }
+  }
+  return -1;
+}
 
 /*
 List of all items (active and inactive).
@@ -297,8 +330,12 @@ function promptView(item) {
 function removeEntry() {
   var item = editItem;
   var index = getIndex(item);
-  entries[index].amount = 1; //TODO: Change to take it from the defaultList
-  entries[index].unit = "-"; //TODO: Change to take it from the defaultList
+  var defaultIndex = getDefaultItemIndex(item);
+//  var entriesDefault = defaultEntries();
+  if (defaultIndex != -1) {
+    entries[index].amount = getDefault(defaultIndex,"amount");
+    entries[index].unit = getDefault(defaultIndex,"unit");
+  }
   entries[index].active = false;
   var type = entries[index].type;
   var nActiveEntries = 0;
@@ -316,6 +353,7 @@ function removeEntry() {
   $("[id=\""+entryID+"\"]")
     .text(item)
     .attr("class","edit");
+  lastItemLogger(type);
   writeCookie();
   editView();
 }
@@ -437,7 +475,7 @@ function addDefault() {
   entries[index].active = true;
   itemId = item + "ID";
   $("[id=\""+itemId+"\"]").attr("class",entries[index].type);
-  var entriesOfAType = []; //indices of items of a type type
+/*  var entriesOfAType = []; //indices of items of a type type
   for (x in entries) {
     if (entries[x].type == type) {
       entriesOfAType.push(x);
@@ -447,7 +485,8 @@ function addDefault() {
     if (entries[entriesOfAType[x]].active == true) {
       lastItems[type]=entries[entriesOfAType[x]].item;
     }
-  }
+  }*/
+  lastItemLogger(type);
   writeCookie();
 }
 
@@ -463,11 +502,12 @@ function addNewItem(item) {
       itemsOfAType.push(entries[x].item);
     }
   }
-  for (x in itemsOfAType) {
+/*  for (x in itemsOfAType) {
     if (itemsOfAType[x].active == true) {
       lastItems[type] = itemsOfAType[x];
     }
-  }
+  }*/
+  lastItemLogger(type);
   var typeIndex = itemsOfAType.indexOf(item); //index of the item in the list_of_items
   var div, p;
   div = $("#"+type);
@@ -517,6 +557,34 @@ function writeCookie() {
 //Needed for setting the margins between items and headings in view mode
 var lastItems = {};
 
+function lastItemLogger(type) {
+  lastItems[type] = "";
+  var entriesOfAType = []; //indices of items of a type type
+  for (x in entries) {
+    if (entries[x].type == type) {
+      entriesOfAType.push(x);
+    }
+  }
+  for (x in entriesOfAType) { //write down what is the last active item of a type type
+    if (entries[entriesOfAType[x]].active == true) {
+      lastItems[type]=entries[entriesOfAType[x]].item;
+    }
+  }
+}
+
+function lastItemMargin(b) {
+  if (b) {
+    for (x in lastItems) {
+      $("[id=\""+lastItems[x]+"ID\"]").css("margin-bottom","1em");
+    }
+  } else {
+    for (x in lastItems) {
+      $("[id=\""+lastItems[x]+"ID\"]").css("margin-bottom","0.1em");
+    }
+  }
+}
+
+
 /*
 Create the looks for an entry
 and display it
@@ -525,7 +593,6 @@ function makeEntry(entry) {
   var i = entry.item;
   var t = entry.type;
   var p = $("<p></p>");
-//  var div = $("#"+t);
   var custom = $("#"+t+"Custom");
   var entryId = i + "ID";
   if (entry.active) {
@@ -535,13 +602,11 @@ function makeEntry(entry) {
     p.text(txt)
      .attr("class",t)
      .attr("id",entryId)
-//    div.append(p);
     custom.before(p);
   } else {
     p.text(i)
      .attr("class","edit")
      .attr("id",entryId)
-//     div.append(p);
     custom.before(p);
   }
 }
@@ -549,17 +614,27 @@ function makeEntry(entry) {
 //Remove 
 function clearList() {
   if (confirm("Remove all entries?") == true) {
-    for (x in items) {
-      entries[x].active = false;
-      $("[id=\""+items[x]+"ID\"]") //TODO: fix also the amount and unit
+//    var entriesDefault = defaultEntries();
+    for (z = 0; z < items.length; z++) {
+      var defaultIndex = getDefaultItemIndex(items[z]);
+      if (defaultIndex != -1) {
+        var unit = getDefault(defaultIndex,"unit");
+//        alert(z+" "+items[z]+" "+unit+" "+entries[z].unit);
+        entries[z].amount = getDefault(defaultIndex,"amount");
+        entries[z].unit = unit;
+        }
+      entries[z].active = false;
+      $("[id=\""+items[z]+"ID\"]")
         .prop("class","edit")
-        .text(items[x]);
-      var type = entries[x].type;
+        .text(items[z]);
+      var type = entries[z].type;
       $("#"+type+"Head").attr("class","edit");
     }
-    writeCookie();
+    lastItemMargin(false);
+    lastItems = {};
     state = "edit";
     editView();
+    writeCookie();
   }
 }
 
@@ -577,23 +652,21 @@ function switchMode() {
   if (state=="view") {
     editView();
     state = "edit";
-    for (x in lastItems) {
-      $("[id=\""+items[x]+"ID\"]").css("bottom-margin: 0.1em;");
-    }
+    lastItemMargin(false);
   } else {
     $(".edit").hide();
     $("#title").text("The Shopping List");
     $("#navi").text("Edit");
     state = "view";
-    for (x in lastItems) {
-      $("[id=\""+lastItems[x]+"ID\"]").css("margin-bottom","1em");
-    }
+    lastItemMargin(true);
   }
 }
 
 var state;
 
 function makePage() {
+//  getDefaultEntries();
+//  entries = JSON.parse(JSON.stringify(entriesDefault));
   showMain(true);
   loadList();
   state = "view";
@@ -610,7 +683,7 @@ function makePage() {
   if (nActive == 0) {  
     showNotification();
   }
-  $(".main > div").on("click","p",itemClick);
+  $(".main > div.items").on("click","p",itemClick);
 }
 
 </script>
@@ -633,44 +706,44 @@ function makePage() {
 <p id="notification"></p>
 
 <h1 class="edit" id="bakeryHead">Bakery products</h1>
-<div id="bakery">
+<div id="bakery" class="items">
 <p class="edit" id="bakeryCustom">+</p>
 </div>
 
 <h1 class="edit" id="dairyHead">Dairy products</h1>
-<div id="dairy">
+<div id="dairy" class="items">
 <p class="edit" id="dairyCustom">+</p>
 </div>
 
 
 <h1 class="edit" id="drinksHead">Drinks</h1>
-<div id="drinks">
+<div id="drinks" class="items">
 <p class="edit" id="drinksCustom">+</p>
 </div>
 
 
 <h1 class="edit" id="dryHead">Dry goods</h1>
-<div id="dry">
+<div id="dry" class="items">
 <p class="edit" id="dryCustom">+</p>
 </div>
 
 <h1 class="edit" id="fishHead">Fish</h1>
-<div id="fish">
+<div id="fish" class="items">
 <p class="edit" id="fishCustom">+</p>
 </div>
 
 <h1 class="edit" id="greensHead">Fruits and vegetables</h1>
-<div id="greens">
+<div id="greens" class="items">
 <p class="edit" id="greensCustom">+</p>
 </div>
 
 <h1 class="edit" id="hygHead">Hygiene products</h1>
-<div id="hyg">
+<div id="hyg" class="items">
 <p class="edit" id="hygCustom">+</p>
 </div>
 
 <h1 class="edit" id="meatHead">Meat products</h1>
-<div id="meat">
+<div id="meat" class="items">
 <p class="edit" id="meatCustom">+</p>
 </div>
 
