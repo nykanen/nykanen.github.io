@@ -134,7 +134,7 @@ entries = JSON.parse(JSON.stringify(entriesDefault));
 
 function getDefault(index,property) {
   var value = entriesDefault[index][property];
-  alert(index+" "+property+" "+value); 
+//  alert(index+" "+property+" "+value); 
   return value;
 }
 
@@ -142,7 +142,7 @@ function getDefaultItemIndex(item) {
 //  var entriesDefault = defaultEntries();
   for (y=0; y< entriesDefault.length; y++) {
     if (entriesDefault[y].item == item) {
-      alert("getDefaultItemIndex"+y+" "+item+" "+entriesDefault[y].item);	
+//      alert("getDefaultItemIndex"+y+" "+item+" "+entriesDefault[y].item);	
       return y;
       break;
     }
@@ -619,7 +619,7 @@ function clearList() {
       var defaultIndex = getDefaultItemIndex(items[z]);
       if (defaultIndex != -1) {
         var unit = getDefault(defaultIndex,"unit");
-        alert(z+" "+items[z]+" "+unit+" "+entries[z].unit);
+//        alert(z+" "+items[z]+" "+unit+" "+entries[z].unit);
         entries[z].amount = getDefault(defaultIndex,"amount");
         entries[z].unit = unit;
         }
@@ -630,12 +630,11 @@ function clearList() {
       var type = entries[z].type;
       $("#"+type+"Head").attr("class","edit");
     }
-alert(entries[26].unit);
     lastItemMargin(false);
     lastItems = {};
     state = "edit";
     editView();
-//    writeCookie();
+    writeCookie();
   }
 }
 
