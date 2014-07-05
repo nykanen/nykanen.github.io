@@ -13,8 +13,8 @@ h1, .view {
   margin-top: 1em;
   background-color:black;
   padding: 0.2em;
-  background-color: rgb(0,17,52);
-  border: 1px solid rgb(0,31,93);
+  background-color: rgb(0,26,52);
+  border: 1px solid rgb(0,44,87);
 }
 
 h2 {
