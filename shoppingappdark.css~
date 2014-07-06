@@ -1,6 +1,6 @@
 @media screen {
   body {
-    font-size: 2em;
+    font-size: 1.5em;
     width: 320px;
     margin-left: auto;
     margin-right: auto;
@@ -9,7 +9,7 @@
 
 @media handheld {
   body {
-    font-size: 2em;
+    font-size: 1.5em;
     width: 100%;
   }
 }
@@ -56,7 +56,7 @@ h3 {
   padding-bottom: 0.5em;
 }
 
-.main,.side {
+.main,.side,.help {
 /*  width: 200px;
   height: 400px;*/
   width:100%;
@@ -307,7 +307,7 @@ label {
   clear: left;
 }
 
-.main p:last-child {
+.main p:last-child, p.helpCustom {
   font-weight:bold;
   padding-left:0.3em;
   padding-right:0.3em;
@@ -321,16 +321,13 @@ label {
   border: 0;
 }
 
-/*@media only screen and (max-device-width: 480px) {
+div.helpContent {
+  clear: both;
+  display: block;
+  margin-top: 1.5em;
+  border: 0;
+  font-size: 0.8em;
+  color: white;
+}
 
-  div.main {
-  width = auto;
-  height = auto;
-  }
-
-}*/
-
-/*p[style="display: block;"]:last-of-type {
-  margin-bottom: 1em;
-}*/
 

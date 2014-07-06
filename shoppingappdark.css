@@ -56,7 +56,7 @@ h3 {
   padding-bottom: 0.5em;
 }
 
-.main,.side {
+.main,.side,.help {
 /*  width: 200px;
   height: 400px;*/
   width:100%;
@@ -321,16 +321,25 @@ label {
   border: 0;
 }
 
-/*@media only screen and (max-device-width: 480px) {
+div.helpContent {
+  clear: both;
+  display: block;
+  margin-top: 1.5em;
+  border: 0;
+  font-size: 0.8em;
+  color: white;
+}
 
-  div.main {
-  width = auto;
-  height = auto;
-  }
-
-}*/
-
-/*p[style="display: block;"]:last-of-type {
-  margin-bottom: 1em;
-}*/
+p.helpCustom {
+  font-weight:bold;
+  padding: 0.1em;
+  padding-left:0.3em;
+  padding-right:0.3em;
+  border-radius: 0.2em;
+  color: white;
+  background-color: gray;
+  border: 0.1em solid gray;
+  margin: 0.1em;
+  float: left;
+}
 
