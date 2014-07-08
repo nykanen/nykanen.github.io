@@ -1,0 +1,350 @@
+@media screen {
+  body {
+    font-size: 1.5em;
+    width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media handheld {
+  body {
+    font-size: 1.5em;
+    width: 100%;
+  }
+}
+
+body {
+  background-color: black;
+  font-family: Tahoma, Geneva, sans-serif;
+}
+
+h1, .view {
+  font-size: 0.8em;
+  font-weight: bold;
+  color: white;
+  clear: both;
+  margin-bottom: 0.1em;
+  margin-top: 1em;
+  background-color:black;
+  padding: 0.2em;
+  background-color: rgb(0,26,52);
+  border: 1px solid rgb(0,44,87);
+}
+
+h2 {
+  font-size: 1.6em;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.1em;
+  margin-top: 0px;
+  margin-left: 0.2em;
+  background-color:black;
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+h3 {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 0.1em;
+  margin-top: 0px;
+  margin-left:0.2em;
+  background-color:black;
+  padding-top: 1em;
+  padding-bottom: 0.5em;
+}
+
+.main,.side,.help {
+/*  width: 200px;
+  height: 400px;*/
+  position: fixed;
+  top: 85px;
+  width: 320px;
+  height: 400px;
+  padding: 0em;
+  border: 0;
+  margin-left: 0;
+  margin-right: 0;
+  background-color: black;
+  overflow: auto;
+}
+
+.inactive {
+  color: white;
+  background-color: gray;
+  padding: 0.1em;
+  border: 0;
+  margin: 0.1em;
+  float: left;
+}
+
+/*p.button {
+  color: white;
+  background-color: gray;
+  padding: 0.1em;
+  border: 1px solid white;
+  margin: 0.2em;
+  line-height:2em;
+}*/
+
+/*.dairy, .meat {*/
+p {
+  color: white;
+  padding: 0.1em;
+  border-style: solid;
+  border-width: 0.1em;
+  border-color: white;
+  margin: 0.1em;
+  float: left;
+}
+
+p.edit, .checked {
+  color: white;
+  padding: 0.1em;
+  border: 0.1em solid gray;
+  margin: 0.1em;
+  float: left;
+}
+
+p.edit {
+  background-color: gray;
+}
+
+p.checked {
+  border: 0.1em outset white;
+  background-color: #303030;
+}
+
+h1 + p {
+  clear: left;
+}
+
+p.bakery {
+  background-color: rgb(233,149,0);
+  border-color: rgb(233,149,0);
+}
+p.dairy {
+  background-color: rgb(0,29,193);
+  border-color: rgb(0,29,193);
+}
+p.dry {
+  background-color: rgb(143,143,0);
+  border-color: rgb(143,143,0);
+}
+p.drinks {
+  background-color: rgb(0,135,135);
+  border-color: rgb(0,135,135);
+}
+p.fish {
+  background-color: rgb(255,45,45);
+  border-color: rgb(255,45,45);
+}
+p.greens {
+  background-color: rgb(29,130,0);
+  border-color: rgb(29,130,0);
+}
+p.hyg {
+  background-color: rgb(164,0,164);
+  border-color: rgb(164,0,164);
+}
+p.meat {
+  background-color: rgb(182,0,0);
+  border-color: rgb(182,0,0);
+}
+
+a:link, a:visited, a:hover {
+  color: white;
+  text-decoration: none;
+}
+
+a:active {
+  color: black;
+  text-decoration: none;
+}
+
+div.menu {
+  position:fixed;
+  top:0em;
+  left:0em;
+  height: 80px;
+  text-align:center;
+  display:block;
+/*  width:100%;*/
+  background-color: rgb(0,70,0);
+  color:white;
+  padding:0em;
+/*  margin-left: auto;
+  margin-right: auto;*/
+}
+
+h1.menu, h1.dummy {
+/*  position:fixed;
+  top:0;*/
+  text-align:left;
+  font-size: 1em;
+  font-weight: bold;
+  clear: both;
+  margin-left:0.3em;
+  margin-bottom: 0.1em;
+  margin-top: 0px;
+  padding-top: 0.2em;
+  padding-bottom: 0em;
+  background-color: rgb(0,70,0);
+  border: 0;
+}
+
+@media screen {
+  div.menu {
+    left: auto;
+    margin-left: auto;
+    margin-right: auto;
+    width: 320px;
+  }
+}
+
+@media handheld {
+  div.menu {
+    left: 0;
+    width: 100%;
+  }
+}
+
+p.menu, p.dummy {
+  text-align: center;
+  font-size: 0.6em;
+  font-weight: bold;
+  text-transform: uppercase;
+/*  color: gray;*/
+  background-color: rgb(0,70,0);
+  margin:3px;
+  margin-left:0.3em;
+  padding-top: 0;
+  padding-bottom: 0;
+  border: 0;
+}
+
+p.dummy {
+  position: relative;
+  top: -0.5em;
+  background-color: black;
+}
+
+p.menu > span, p.dummy > span {
+  border: 0.2em solid white;
+/*  background-color: black;*/
+  margin:3px;
+  margin-bottom:0.1em;
+  display: block;
+  padding-left:1em;
+  padding-right:1em;
+  padding-top: 0.2em;
+  padding-bottom: 0.1em;
+  float: left;
+}
+
+.bar {
+  position: fixed;
+  top: 75px;
+  height:5px;
+  width:320px;
+  display:block;
+  background-color:rgb(0,108,128);
+  margin-top:0.2em;
+}
+
+.prompt {
+  border: 0.2em solid gray;
+  background-color: black;
+  margin-top:3em;
+  margin-left:0.5em;
+  display: block;
+  width: 60%;
+  padding-left:1em;
+  padding-right:1em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: gray;
+}
+
+.button {
+  border: 1px solid gray;
+  background-color: black;
+  margin-top:0.4em;
+  margin-left:0.4em;
+  display: block;
+  width: 10em;
+  padding-top: 0.1em;
+  padding-bottom: 0.1em;
+  text-align: center;
+  font-size: 0.8em;
+  font-weight: bold;
+  text-transform: uppercase;
+  float: left;
+  clear: both;
+  color: gray;
+}
+
+.input {
+  width: 6em;
+}
+
+/*#inputItem {
+  width: 8em;
+}*/
+
+form {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+label {
+  display: block;
+  width: 4.5em;
+  float: left;
+  margin: 0.1em;
+  text-align: right;
+  clear: left;
+}
+
+.main p:last-child {
+  font-weight:bold;
+  padding-left:0.3em;
+  padding-right:0.3em;
+  border-radius: 0.2em;
+  margin-bottom: 1em;
+}
+
+#notification {
+  clear: both;
+  margin-top: 1em;
+  border: 0;
+}
+
+div.helpContent {
+  clear: both;
+  display: block;
+  margin-top: 1.5em;
+  border: 0;
+  font-size: 0.8em;
+  color: white;
+}
+
+p.helpCustom {
+  font-weight:bold;
+  padding: 0.1em;
+  padding-left:0.3em;
+  padding-right:0.3em;
+  border-radius: 0.2em;
+  color: white;
+  background-color: gray;
+  border: 0.1em solid gray;
+  margin: 0.1em;
+  float: left;
+}
+
